@@ -1,7 +1,0 @@
-POST http://localhost:3000/api/dangnhap
-Content-Type: application/json
-
-{
-    "ten_tai_khoan": "user123456",
-    "mat_khau": "password123"
-}
