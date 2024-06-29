@@ -24,7 +24,5 @@ const NoiThatsSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-}, {
-    timestamps: true
 })
 module.exports = new mongoose.model('noiThats', NoiThatsSchema)

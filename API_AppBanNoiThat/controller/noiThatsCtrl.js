@@ -7,9 +7,10 @@ router.get('/noiThat/:id', async function(req, res) {
         
         if(exitsGet.length == 0){
             res.status(404).json({error: "Danh sách nội thất trống"})
+            return
         }
 
-        res.status(200).json({error: "Tồn tại danh sách" + exitsGet})
+        res.status(200).json(exitsGet)
     } catch (err) {
         console.error("Error:", err);
         res.status(500).json({ error: "Lỗi máy chủ nội bộ." });

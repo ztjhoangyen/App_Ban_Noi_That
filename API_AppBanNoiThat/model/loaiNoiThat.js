@@ -6,6 +6,10 @@ const loaiNoiThatsSchema = new mongoose.Schema({
     },
     img: {
         type: String
+    },
+    id_danh_muc:{
+        type: String, 
+        ref: 'danhMucs'
     }
 },{
     timestamps: true
