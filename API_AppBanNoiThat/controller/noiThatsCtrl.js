@@ -23,9 +23,9 @@ router.get('/noiThatCT/:id', async function(req, res) {
         
         if(!exitsGetCT){
             res.status(404).json({error: "Nội thất null"})
+            retur
         }
-
-        res.status(200).json({error: "Chi tiết nội thất tồn tại" + exitsGetCT})
+        res.status(200).json(exitsGetCT)
     } catch (err) {
         console.error("Error:", err);
         res.status(500).json({ error: "Lỗi máy chủ nội bộ." });

@@ -3,7 +3,7 @@ const nguoiDungs = require('../model/nguoiDung')
 
 router.post('/dangky', async function(req, res) {
     try {
-        const { ten_tai_khoan, email, mat_khau, ho_ten, dia_chi, so_dien_thoai } = req.body;
+        const { ten_tai_khoan, email, mat_khau, ho_ten, dia_chi, so_dien_thoai, role } = req.body;
 
         if (ten_tai_khoan.length < 10 || ten_tai_khoan.length > 15) {
             return res.status(422).json({ error: 'Tên tài khoản phải có từ 10 đến 15 ký tự.' });
@@ -23,14 +23,15 @@ router.post('/dangky', async function(req, res) {
             ten_tai_khoan,
             email,
             mat_khau,
-            ho_ten
+            ho_ten,
+            role
             // CHÝ Ý: tạo sau
             // dia_chi,
             // so_dien_thoai
         });
 
         await newUser.save();
-        res.status(201).json({ message: 'Người dùng đã được tạo thành công.', user: newUser });
+        res.status(201).json(newUser);
 
     } catch (err) {
         console.error("Error:", err);
@@ -51,7 +52,7 @@ router.post('/dangnhap', async (req, res) => {
             return res.status(400).json({ error: 'Mật khẩu không chính xác.' });
         }
 
-        res.status(200).json({ message: 'Đăng nhập thành công.', user });
+        res.status(200).json(user);
     } catch (err) {
         console.error("Error:", err);
         res.status(500).json({ error: "Lỗi máy chủ nội bộ." });

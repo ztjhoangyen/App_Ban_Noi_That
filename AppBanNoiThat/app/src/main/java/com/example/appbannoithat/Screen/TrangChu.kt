@@ -48,7 +48,6 @@ import com.example.appbannoithat.ViewModel.ViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
-
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     var istab by remember { mutableStateOf("Home") }
@@ -173,7 +172,7 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
         }
     ) {
         when(istab){
-            "Home" -> gop(it)
+            "Home" -> gop(it, viewModel)
             "Thư mục" -> ThuMuc(it, viewModel, navController)
             "Giỏ hàng" -> UITrangChu(it)
             "Tôi" -> tam(it)
@@ -198,8 +197,15 @@ fun UITrangChu(it: PaddingValues){
 }
 
 @Composable
-fun gop(it: PaddingValues){
-
+fun gop(it: PaddingValues, viewModel: ViewModel){
+    Text(
+        text = "Log out nè",
+        modifier = Modifier
+            .padding(it)
+            .clickable{
+                viewModel.logout()
+        }
+    )
 }
 
 @Composable

@@ -12,7 +12,7 @@ const DonHangChiTietsSchema = new mongoose.Schema({
     so_luong: {
         type: Number
     },
-    gia: {
+    tong_tien: {
         type: Number
     }
 },{

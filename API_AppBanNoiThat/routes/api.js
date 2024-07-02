@@ -8,6 +8,7 @@ const gioHang = require('../controller/gioHang')
 const gioHangCT = require('../controller/gioHangCT')
 const sapXep = require('../controller/sapXep')
 const danhMucCtrl = require('../controller/danhMucCtrl')
+const DonHangCtrl = require('../controller/DonHangCtrl')
 
 router.use(nguoiDungCtrl)
 router.use(loaiNoiThatCtrl)
@@ -16,6 +17,7 @@ router.use(gioHang)
 router.use(gioHangCT)
 router.use(sapXep)
 router.use(danhMucCtrl)
+router.use(DonHangCtrl)
 
 
 module.exports = router;

@@ -3,10 +3,10 @@ package com.example.appbannoithat.nav
 enum class Screen(val route : String) {
     TrangChu("trangchu"),
     ListNoiThat("listNoiThat"),
+    NoiThat("noiThat"),
     Register("register"),
-    Page("page"),
-    Comment("comment"),
-    Reply("reply"),
+    Login("login"),
+    GioHang("gioHang"),
     ForYou("forYou"),
     Search("search"),
     testThu("testThu")

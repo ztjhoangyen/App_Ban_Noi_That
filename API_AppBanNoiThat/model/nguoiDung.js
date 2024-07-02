@@ -25,6 +25,10 @@ const NguoiDungsSchema = new mongoose.Schema({
     },
     so_dien_thoai: {
         type: String
+    },
+    role:{
+        type: Boolean,
+        default: false
     }
 },{
     timestamps: true

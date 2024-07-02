@@ -1,40 +1,40 @@
-POST http://localhost:3000/api/gioHang
+POST http://localhost:3000/api/gioHangVaChiTiet
 Content-Type: application/json
 
 {
-    "nguoi_dung_id": "667dbfcbe8426273772ec45d",
-    "tong_gia": 0,
+  "nguoi_dung_id": "66812a5658f41685a1eae74d",
+  "noi_that_id": "667fbc80d8ea08508373ec2b",
+  "so_luong": 200,
+  "gia": 150000
+}
+
+
+###
+GET http://localhost:3000/api/gioHangCT/66812a5658f41685a1eae74d
+Content-Type: application/json
+
+{
+    "nguoi_dung_id": "66812a5658f41685a1eae74d",
     "trang_thai": 1
 }
 
-###
-GET http://localhost:3000/api/danhMuc
-Content-Type: application/json
-
-# {
-#     "nguoi_dung_id": "user123456",
-#     "trang_thai": 1
-# }
-
 
 
 ###
-POST http://localhost:3000/api/gioHangCT
+PUT http://localhost:3000/api/donhang/6683ea0d67aa8fa076df6cc5/trangthai
 Content-Type: application/json
 
 {
-    "gio_hang_id": "667e7cbea9497ff0545be1bb",
-    "noi_that_id": "667e36f08f4d1e9fb86b01b8",
-    "so_luong": 2,
-    "gia": 200
-}
-
+    "trangthai": "KKK",
+    "role": true
+} 
 
 ###
-PUT http://localhost:3000/api/gioHangCT/667e790d10c5c8c8dc05334a
+PUT http://localhost:3000/api/donhang/6683ea0d67aa8fa076df6cc5/trangthai
 Content-Type: application/json
 
 {
    
-    "so_luong": 7
+    "trangthai": "cập nhật trạng thái",
+    "tinh_trang": "thanh toán rồi"
 }

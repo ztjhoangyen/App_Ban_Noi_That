@@ -50,6 +50,7 @@ import coil.compose.rememberImagePainter
 import com.example.appbannoithat.Model.NoiThat
 import com.example.appbannoithat.ViewModel.ViewModel
 import com.example.appbannoithat.nav.SortState
+import com.example.appbannoithat.nav.navController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,13 +92,13 @@ fun ListNoiThat(navController: NavHostController, viewModel: ViewModel, id: Stri
             )
         }
     ) {
-        PageNTs(viewModel, lstNTs, it, id)
+        PageNTs(viewModel, lstNTs, it, id, navController)
     }
 }
 
 @ExperimentalMaterial3Api
 @Composable
-fun PageNTs(viewModel: ViewModel, lstNTs: List<NoiThat>, it: PaddingValues, id: String) {
+fun PageNTs(viewModel: ViewModel, lstNTs: List<NoiThat>, it: PaddingValues, id: String, navController: NavHostController) {
     val gridState = rememberLazyStaggeredGridState()
     var isDialog by remember { mutableStateOf(false) }
 
@@ -167,7 +168,10 @@ fun PageNTs(viewModel: ViewModel, lstNTs: List<NoiThat>, it: PaddingValues, id: 
 //                )
 //            }
             items(productsToDisplay.size) { index ->
-                ItemNoiThat(Item = productsToDisplay[index])
+                ItemNoiThat(Item = productsToDisplay[index], onClick = {
+                    viewModel.getNoiThatCT(productsToDisplay[index]._id)
+                    navController.navigate("noiThat")
+                })
             }
         }
     }
@@ -252,9 +256,11 @@ fun BottomSheetContent(viewModel: ViewModel, onClose: () -> Unit, id: String) {
 }
 
 @Composable
-fun ItemNoiThat(Item: NoiThat) {
+fun ItemNoiThat(Item: NoiThat, onClick : () -> Unit) {
 
-    Column {
+    Column(
+        modifier = Modifier.clickable { onClick() }
+    ) {
         Image(
             painter = rememberImagePainter(Item.hinh_anh),
             contentDescription = null,

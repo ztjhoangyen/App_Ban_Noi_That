@@ -8,24 +8,27 @@ const DonHangsSchema = new mongoose.Schema({
     tong_gia: {
         type: Number
     },
+    so_luong: {
+        type: Number
+    },
     //  (Đang xử lý, Đã giao, Đã hủy, ...)
     trang_thai: {
-        type: Array
+        type: String
     },
     phuong_thuc_thanh_toan: {
-        type: Array
+        type: String
     },
     dia_chi_giao_hang: {
-        type: Array
+        type: String
     },
     ghi_chu: {
-        type: Number
+        type: String
     },
-    trang_thai: {
-        type: Array
+    img:{
+        type: String
     },
-    tong_gia: {
-        type: Number
+    tinh_trang:{
+        type: String
     }
     // ma_giam_gia: {
     //     type: Number
