@@ -161,64 +161,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
 //observable cho phép bạn lắng nghe thay đổi giá trị của một thuộc tính
     val user by viewModel.acc.observeAsState()
     val id = user?._id
-//    Row(
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.Center,
-//        modifier = Modifier
-//            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-//            .padding(10.dp)
-//            .width(150.dp)
-//    ) {
-//        Text(
-//            text = "-",
-//            fontSize = 24.sp,
-//            fontWeight = FontWeight.Bold,
-//            modifier = Modifier
-//                .clickable {
-//                    val objre = Server.Test(
-//                        nguoi_dung_id = id.toString(),
-//                        noi_that_id = hiohangCT.noi_that_id.toString(),
-//                        so_luong = quantity,
-//                        gia = hiohangCT.gia
-//                    )
-//                    if (quantity > 1) {
-//                        quantity--
-//                        viewModel.PutGHCT(objre)
-//                    }
-//                }
-//                .padding(8.dp)
-//        )
-//
-//        Text(
-//            text = "${hiohangCT.so_luong}",
-//            fontSize = 18.sp,
-//            fontWeight = FontWeight.Bold,
-//            modifier = Modifier.padding(horizontal = 16.dp)
-//        )
-//
-//        Text(
-//            text = "+",
-//            fontSize = 24.sp,
-//            fontWeight = FontWeight.Bold,
-//            modifier = Modifier
-//                .clickable {
-//                    val objreq = Server.Test(
-//                        nguoi_dung_id = id.toString(),
-//                        noi_that_id = hiohangCT.noi_that_id.toString(),
-//                        so_luong = quantity,
-//                        gia = hiohangCT.gia
-//                    )
-//                    if (quantity < maxQuantity) {
-//                        quantity++
-//                        isVisi = false
-//                        viewModel.PutGHCT(objreq)
-//                    } else {
-//                        isVisi = true
-//                    }
-//                }
-//                .padding(8.dp)
-//        )
-//    }
 
     Row(
         modifier = Modifier
@@ -230,7 +172,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-//                .height(200.dp),
             contentScale = ContentScale.Fit
         )
         val coroutineScope = rememberCoroutineScope()
@@ -264,7 +205,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                                     )
                                     isVisi = false
                                     viewModel.PutGHCT(id.toString(), objre)
-//                                viewModel.getGHCT(id.toString())
                                     Log.d(
                                         "KKKK",
                                         "${id.toString()} và ${hiohangCT.noi_that_id.toString()} và ${quantity} và ${hiohangCT.gia}"
@@ -272,7 +212,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                                 }
                             }
                         }
-//                        .padding(8.dp)
                 )
 
                 Text(
@@ -299,7 +238,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                                         gia = hiohangCT.gia
                                     )
                                     viewModel.PutGHCT(id.toString(), objreq)
-//                                viewModel.getGHCT(id.toString())
 
                                 } else {
                                     isVisi = true
@@ -307,11 +245,8 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                             }
                         },
                     color = plus
-//                        .padding(8.dp)
                 )
-//                LaunchedEffect(quantity) {
-//                    viewModel.getGHCT(id.toString())
-//                }
+
                 LaunchedEffect(Unit) {
                     snapshotFlow { quantity }
                         .collect { newQuantity ->

@@ -17,9 +17,12 @@ import com.example.appbannoithat.Model.LoaiNoiThat
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
 import com.example.appbannoithat.Model.NoiThat
+import com.example.appbannoithat.Model.Slideshow
 import com.example.appbannoithat.Server.RetrofitBanNoiThat
 import com.example.appbannoithat.Server.Server
 import com.example.appbannoithat.nav.SortState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ViewModel : ViewModel() {
@@ -55,6 +58,9 @@ class ViewModel : ViewModel() {
 
     private val _GioHangCT = MutableLiveData<List<GioHangCT>>()
     val GioHangCT: LiveData<List<GioHangCT>> = _GioHangCT
+
+    private val _slide = MutableStateFlow<List<Slideshow>?>(null)
+    val slide: StateFlow<List<Slideshow>?> get() = _slide
 
     //thong bao
     private val _loaiNTErr = MutableLiveData<String>()
@@ -374,7 +380,6 @@ class ViewModel : ViewModel() {
                 val response = RetrofitBanNoiThat().server.updateChiTietGH(test)
                 if (response.isSuccessful) {
                     getGHCT(iduser)
-//                   đang không cập nhật lại số lượng khi thêm
                     Log.d("VM_putgioHangVaChiTiet", "Success" + "${response.body()}")
                 } else {
                     Log.d(
@@ -384,6 +389,25 @@ class ViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("VM_putgioHangVaChiTiet", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getSlideshow(){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getImage()
+                if (response.isSuccessful) {
+                    _slide.value = response.body()
+                    Log.d("VM_Image", "Success" + "${response.body()}")
+                } else {
+                    Log.d(
+                        "VM_Image",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("VM_Image", "Not Success ${e.message}")
             }
         }
     }

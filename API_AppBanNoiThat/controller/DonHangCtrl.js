@@ -48,7 +48,8 @@ route.post('/donhang/:id', async function (req, res, next) {
 
             const dhct = new donHangChiTiets({
                 don_hang_id: donHangSaved._id,
-                ten_noi_that: sp.ten_noi_that,
+                // thêm
+                noi_that_id: sp._id,
                 tong_tien: tongTienCT,
                 so_luong: item.so_luong
                 // img: sp.hinh_anh,
@@ -69,19 +70,6 @@ route.post('/donhang/:id', async function (req, res, next) {
     }
 })
 
-// route.put('/donhang/:id/trangthai', async function (req, res, next) {
-//     try {
-//         const hoadonId = req.params.id
-//         const newStrang_thai = req.body.trangthai
-//         const updateddonhang = await donHang.findByIdAndUpdate(
-//             hoadonId,
-//             { trang_thai: newStrang_thai, tinh_trang: req.body.tinh_trang },
-//             { new: true })
-//         res.status(200).json(updateddonhang)
-//     } catch (err) {
-//         res.status(500).json(err);
-//     }
-// })
 // Ấn nút để cập nhật trạng thái đơn hàng riêng cho admin và người dùng
 route.put('/donhang/:id/trangthai', async function (req, res, next) {
     try {
@@ -120,19 +108,66 @@ route.put('/donhang/:id/trangthai', async function (req, res, next) {
 // if(role) thì hỏi xem có danh sách nào để hiện danh sách dh cho admin không //else thì hỏi xem có tồn tại dh của người dùng này không, nếu không thì hiện thông báo là không có
 route.get('/donhang/:userId', async function (req, res, next) {
     try {
-        const DonHang = await donHang.find({nguoi_dung_id: req.params.userId });
+        const role = req.body.role
+        if(role){
+            const listHDtoAd = await donHang.find()
+            if(!listHDtoAd || listHDtoAd.length == 0){
+                return res.status(404).json({error : "Không tồn tại hóa đơn"})
+            }
+            console.log("Admin", listHDtoAd);
 
-        if (!DonHang || DonHang.length === 0) {
-            return res.status(404).json({ message: "Không tìm thấy đơn hàng cho người dùng này" });
+            return res.status(200).json(listHDtoAd)
+        }else{
+            const listHDtoUser = await donHang.find({nguoi_dung_id: req.params.userId})
+            if(!listHDtoUser || listHDtoUser.length == 0){
+                return res.status(404).json({error : "Không tồn tại hóa đơn"})
+            }
+            console.log("user", listHDtoUser);
+
+            return res.status(200).json(listHDtoUser)
         }
-
-        res.status(200).json(DonHang);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Lỗi máy chủ nội bộ" });
     }
+})
+
+route.get("/donhangchitiet/:id", async function(req, res, next){
+    try {
+        const idDHCT = await donHangChiTiets.find({ don_hang_id: req.params.id });
+        
+        if(!idDHCT || idDHCT.length === 0){
+            return res.status(404).json({ error: "Không tồn tại đơn hàng chi tiết" });
+        }
+
+        const listDHCT = [];
+        for (const item of idDHCT) {
+            const idnoithat = await noiThat.findById(item.noi_that_id);
+            if(!idnoithat){
+                console.log(`Không tìm thấy nội thất với id: ${item.noi_that_id}`);
+                continue;
+            }
+            
+            listDHCT.push({
+                _id: item._id,
+                don_hang_id: item.don_hang_id,
+                ten_noi_that: idnoithat.ten_noi_that,
+                mo_ta: idnoithat.mo_ta,
+                img: idnoithat.hinh_anh,
+                so_luong: item.so_luong,
+                tong_tien: item.tong_tien
+            });
+        }
+
+        res.status(200).json(listDHCT);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ error: "Lỗi máy chủ nội bộ" });
+    }
 });
+
 //xuất ra hóa đơn khi tới
+// lấy mọi thứ của đơn hàng để ra hóa đơn, hóa đơn chi tiết cũng lấy tương tự, mã hóa đơn là lấy từ zalo pay ý
 
 module.exports = route
 

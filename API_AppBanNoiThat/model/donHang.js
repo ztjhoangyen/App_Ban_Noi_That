@@ -24,9 +24,9 @@ const DonHangsSchema = new mongoose.Schema({
     ghi_chu: {
         type: String
     },
-    img:{
-        type: String
-    },
+    // img:{
+    //     type: String
+    // },
     tinh_trang:{
         type: String
     }

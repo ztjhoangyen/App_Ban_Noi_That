@@ -172,7 +172,7 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
         }
     ) {
         when(istab){
-            "Home" -> gop(it, viewModel)
+            "Home" -> Home(it, viewModel, navController)
             "Thư mục" -> ThuMuc(it, viewModel, navController)
             "Giỏ hàng" -> UITrangChu(it)
             "Tôi" -> tam(it)
@@ -196,22 +196,7 @@ fun UITrangChu(it: PaddingValues){
     }
 }
 
-@Composable
-fun gop(it: PaddingValues, viewModel: ViewModel){
-    Text(
-        text = "Log out nè",
-        modifier = Modifier
-            .padding(it)
-            .clickable{
-                viewModel.logout()
-        }
-    )
-}
 
-@Composable
-fun hop(it: PaddingValues){
-
-}
 @Composable
 fun tam(it: PaddingValues){
 

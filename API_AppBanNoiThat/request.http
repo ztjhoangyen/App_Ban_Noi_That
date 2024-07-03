@@ -1,22 +1,17 @@
-POST http://localhost:3000/api/gioHangVaChiTiet
+POST http://localhost:3000/api/donhang/66812a5658f41685a1eae74d
 Content-Type: application/json
 
-{
-  "nguoi_dung_id": "66812a5658f41685a1eae74d",
-  "noi_that_id": "667fbc80d8ea08508373ec2b",
-  "so_luong": 200,
-  "gia": 150000
+ {
+    "phuong_thuc_thanh_toan": "Thanh toán khi nhận hàng",
+    "dia_chi_giao_hang": "123 Đường ABC, Quận XYZ, Thành phố HCM",
+    "ghi_chu": "Giao hàng vào buổi sáng nếu được",
+    "tinh_trang": "Chưa xử lý"
 }
 
 
 ###
-GET http://localhost:3000/api/gioHangCT/66812a5658f41685a1eae74d
+GET http://localhost:3000/api/donhangchitiet/6684cee9e3398c33b9a631dc
 Content-Type: application/json
-
-{
-    "nguoi_dung_id": "66812a5658f41685a1eae74d",
-    "trang_thai": 1
-}
 
 
 
@@ -30,11 +25,16 @@ Content-Type: application/json
 } 
 
 ###
-PUT http://localhost:3000/api/donhang/6683ea0d67aa8fa076df6cc5/trangthai
+POST http://localhost:3000/api/donhang/66812a5658f41685a1eae74d
 Content-Type: application/json
 
 {
    
-    "trangthai": "cập nhật trạng thái",
-    "tinh_trang": "thanh toán rồi"
+  {
+    "phuong_thuc_thanh_toan": "Thanh toán khi nhận hàng",
+    "dia_chi_giao_hang": "123 Đường ABC, Quận XYZ, Thành phố HCM",
+    "ghi_chu": "Giao hàng vào buổi sáng nếu được",
+    "tinh_trang": "Chưa xử lý"
+}
+
 }
