@@ -1,18 +1,24 @@
 package com.example.appbannoithat.ViewModel
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.appbannoithat.MainActivity
 import com.example.appbannoithat.Model.Account
 import com.example.appbannoithat.Model.DanhMuc
+import com.example.appbannoithat.Model.DonHang
+import com.example.appbannoithat.Model.DonHangCT
+import com.example.appbannoithat.Model.DonHangPUT
+import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHang
 import com.example.appbannoithat.Model.GioHangCT
-import com.example.appbannoithat.Model.GioHangCTReq
-import com.example.appbannoithat.Model.GioHangReq
 import com.example.appbannoithat.Model.LoaiNoiThat
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
@@ -24,6 +30,9 @@ import com.example.appbannoithat.nav.SortState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import vn.zalopay.sdk.ZaloPayError
+import vn.zalopay.sdk.ZaloPaySDK
+import vn.zalopay.sdk.listeners.PayOrderListener
 
 class ViewModel : ViewModel() {
     private val _danhMuc = MutableLiveData<List<DanhMuc>>()
@@ -61,6 +70,12 @@ class ViewModel : ViewModel() {
 
     private val _slide = MutableStateFlow<List<Slideshow>?>(null)
     val slide: StateFlow<List<Slideshow>?> get() = _slide
+
+    private val _getDH = MutableLiveData<List<DonHang>>()
+    val getDH: LiveData<List<DonHang>> = _getDH
+
+    private val _getDHCT = MutableLiveData<List<DonHangCT>>()
+    val getDHCT: LiveData<List<DonHangCT>> = _getDHCT
 
     //thong bao
     private val _loaiNTErr = MutableLiveData<String>()
@@ -191,25 +206,6 @@ class ViewModel : ViewModel() {
         }
     }
 
-    fun postGioHang(gioHangReq: GioHangReq) {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitBanNoiThat().server.postGioHang(gioHangReq)
-                if (response.isSuccessful) {
-                    _ghCT.value = response.body()
-                    Log.d("VM_gioHang", "Success")
-                } else {
-                    Log.d(
-                        "VM_gioHang",
-                        "Not Success: ${response.code()} - ${response.message()}"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e("VM_gioHang", "Not Success ${e.message}")
-            }
-        }
-    }
-
     // CHU Ý   Nhớ text list trông UI
     fun getNoiThats(id: String) {
         viewModelScope.launch {
@@ -310,24 +306,6 @@ class ViewModel : ViewModel() {
         }
     }
 
-//    fun postgioHangCT(gioHangCTReq: GioHangCTReq) {
-//        viewModelScope.launch {
-//            try {
-//                val response = RetrofitBanNoiThat().server.postgioHangCT(gioHangCTReq)
-//                if (response.isSuccessful) {
-//                    Log.d("VM_GHCT", "Success" + "${response.body()}")
-//                } else {
-//                    Log.d(
-//                        "VM_GHCT",
-//                        "Not Success: ${response.code()} - ${response.message()}"
-//                    )
-//                }
-//            } catch (e: Exception) {
-//                Log.e("VM_GHCT", "Not Success ${e.message}")
-//            }
-//        }
-//    }
-
     fun Test(test : Server.Test){
         viewModelScope.launch {
             try {
@@ -411,5 +389,120 @@ class ViewModel : ViewModel() {
             }
         }
     }
+
+    fun getdel(id: String, iduser: String){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.delGHCT(id)
+                if (response.isSuccessful) {
+                    getGHCT(iduser)
+                    Log.d("VM_del", "Success")
+                } else {
+                    Log.d(
+                        "VM_del",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("VM_del", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun postDH(id: String, donHangReq : DonHangReq){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.postDH(id, donHangReq)
+                if (response.isSuccessful) {
+                    //Xóa giỏ hàng
+                    _GioHangCT.value = emptyList()
+                    Log.d("VM_postDH", "Success")
+                } else {
+                    when(response.code()){
+                        400 -> _GHErr.value = "Một số sản phẩm vượt quá số lượng tồn kho. Mình đã cập nhật lại số lượng trong giỏ hàng. Vui lòng kiểm tra lại giỏ hàng của bạn."
+                        404 -> _GHErr.value = "Không tìm thấy giỏ hàng"
+                        else -> _GHErr.value = "Thất bại"
+
+                    }
+                    Log.d(
+                        "VM_postDH",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("VM_postDH", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getDH(id: String, role: Boolean){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getDH(id, role)
+                if (response.isSuccessful) {
+                    _getDH.value = response.body()
+                    Log.d("VM_getDH", "Success")
+                } else {
+                    when(response.code()){
+                        404 -> _GHErr.value = "Không tồn tại hóa đơn"
+                        else -> _GHErr.value = "Thất bại"
+                    }
+                    Log.d(
+                        "VM_getDH",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _getDH.value = emptyList()
+
+                }
+            } catch (e: Exception) {
+                _getDH.value = emptyList()
+                Log.e("VM_getDH", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun putDH(idUser: String, id: String, donHangPUT : DonHangPUT){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.putDH(id, donHangPUT)
+                if (response.isSuccessful) {
+                    getDH(idUser, donHangPUT.role)
+                    Log.d("VM_putDH", "Success")
+                } else {
+                    when(response.code()){
+                        404 -> _GHErr.value = "Không tìm thấy đơn hàng"
+                        403 -> _GHErr.value = "Bạn không có quyền thay đổi trạng thái đơn hàng này."
+                        else -> _GHErr.value = "Thất bại"
+                    }
+                    Log.d(
+                        "VM_putDH",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("VM_putDH", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getDHCT(id: String){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getDHCT(id)
+                if (response.isSuccessful) {
+                    _getDHCT.value = response.body()
+                    Log.d("VM_getHDCT", "Success")
+                } else {
+                    Log.d(
+                        "VM_getHDCT",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("VM_getHDCT", "Not Success ${e.message}")
+            }
+        }
+    }
+
 
 }

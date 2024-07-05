@@ -15,14 +15,14 @@ data class DonHang(
 //id truyền vào khi post là id người dùng
 data class DonHangReq(
     val phuong_thuc_thanh_toan : String,
-    val dia_chi_giao_hang : Number,
-    val ghi_chu : Number,
+    val dia_chi_giao_hang : String,
+    val ghi_chu : String,
     val tinh_trang : String
 )
 
 data class DonHangPUT(
     val role : Boolean,
-    val trang_thai : String
+    val trangthai : String
 )
 
 data class DonHangCT(

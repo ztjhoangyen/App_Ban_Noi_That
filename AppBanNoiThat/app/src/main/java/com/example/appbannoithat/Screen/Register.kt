@@ -275,6 +275,7 @@ fun RegisterForm(
             TextAcc(text = fullnameErr)
         }
         Spacer(modifier = Modifier.height(30.dp))
+
         if (registerErr != null) {
             Text(
                 text = registerErr ?: "",

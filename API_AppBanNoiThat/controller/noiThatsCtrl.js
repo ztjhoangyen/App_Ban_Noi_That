@@ -9,7 +9,6 @@ router.get('/noiThat/:id', async function(req, res) {
             res.status(404).json({error: "Danh sách nội thất trống"})
             return
         }
-
         res.status(200).json(exitsGet)
     } catch (err) {
         console.error("Error:", err);

@@ -13,8 +13,6 @@ Content-Type: application/json
 GET http://localhost:3000/api/donhangchitiet/6684cee9e3398c33b9a631dc
 Content-Type: application/json
 
-
-
 ###
 PUT http://localhost:3000/api/donhang/6683ea0d67aa8fa076df6cc5/trangthai
 Content-Type: application/json
@@ -37,4 +35,16 @@ Content-Type: application/json
     "tinh_trang": "Chưa xử lý"
 }
 
+}
+
+
+###
+POST http://localhost:3000/api/donhang/66812a5658f41685a1eae74d
+Content-Type: application/json
+
+ {
+    "phuong_thuc_thanh_toan": "Thanh toán khi nhận hàng",
+    "dia_chi_giao_hang": "123 Đường ABC, Quận XYZ, Thành phố HCM",
+    "ghi_chu": "Giao hàng vào buổi sáng nếu được",
+    "tinh_trang": "Chưa xử lý"
 }

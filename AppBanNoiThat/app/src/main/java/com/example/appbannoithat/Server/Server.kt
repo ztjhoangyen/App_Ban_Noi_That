@@ -6,9 +6,7 @@ import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangCT
 import com.example.appbannoithat.Model.DonHangPUT
 import com.example.appbannoithat.Model.DonHangReq
-import com.example.appbannoithat.Model.GioHang
 import com.example.appbannoithat.Model.GioHangCT
-import com.example.appbannoithat.Model.GioHangReq
 import com.example.appbannoithat.Model.LoaiNoiThat
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
@@ -16,10 +14,12 @@ import com.example.appbannoithat.Model.NoiThat
 import com.example.appbannoithat.Model.Slideshow
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 interface Server {
@@ -29,8 +29,8 @@ interface Server {
     @GET("loaiNoiThat/{id}")
     suspend fun getLoaiNT(@Path("id") id: String): Response<List<LoaiNoiThat>>
 
-    @POST("gioHang")
-    suspend fun postGioHang(gioHangReq: GioHangReq): Response<GioHang>
+//    @POST("gioHang")
+//    suspend fun postGioHang(gioHangReq: GioHangReq): Response<GioHang>
 
     @GET("noiThat/{id}")
     suspend fun getNoiThats(@Path("id") id: String): Response<List<NoiThat>>
@@ -73,15 +73,20 @@ interface Server {
     suspend fun getImage(): Response<List<Slideshow>>
 //truyền id người dùng
     @POST("donhang/{id}")
-    suspend fun postDH(@Body donHangReq : DonHangReq): Response<DonHang>
+    suspend fun postDH(@Path("id") id: String, @Body donHangReq : DonHangReq): Response<DonHang>
 //truyền id đơn hàng
     @PUT("donhang/{id}/trangthai")
     suspend fun putDH(@Path("id") id: String, @Body donHangPUT : DonHangPUT): Response<DonHang>
 //truyền id người dùng
+
     @GET("donhang/{userId}")
-    suspend fun getDH(): Response<List<DonHang>>
+    suspend fun getDH(@Path("userId") userId: String, @Query("role") role : Boolean): Response<List<DonHang>>
 //truyền id đơn hàng
+
     @GET("donhangchitiet/{id}")
     suspend fun getDHCT(@Path("id") id: String): Response<List<DonHangCT>>
+
+    @DELETE("delGHCT/{id}")
+    suspend fun delGHCT(@Path("id") id: String): Response<Void>
 
 }

@@ -43,14 +43,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.example.appbannoithat.Model.NoiThat
 import com.example.appbannoithat.ViewModel.ViewModel
 import com.example.appbannoithat.nav.SortState
-import com.example.appbannoithat.nav.navController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,10 +64,7 @@ fun ListNoiThat(navController: NavHostController, viewModel: ViewModel, id: Stri
         topBar = {
             TopAppBar(
                 title = {
-//                    Text(
-//                        color = Color.Black,
-//                        text = "${}"
-//                    )
+
                 },
                 navigationIcon = {
                     IconButton(onClick = {}) {
@@ -151,8 +145,6 @@ fun PageNTs(viewModel: ViewModel, lstNTs: List<NoiThat>, it: PaddingValues, id: 
             }
         }
 
-
-//  =====
         LazyVerticalStaggeredGrid(
             modifier = Modifier
                 .padding(10.dp),
@@ -162,11 +154,6 @@ fun PageNTs(viewModel: ViewModel, lstNTs: List<NoiThat>, it: PaddingValues, id: 
             verticalItemSpacing = 8.dp,
             contentPadding = PaddingValues(8.dp)
         ) {
-//            items(lstNTs.size) { index ->
-//                ItemNoiThat(
-//                    Item = lstNTs[index],
-//                )
-//            }
             items(productsToDisplay.size) { index ->
                 ItemNoiThat(Item = productsToDisplay[index], onClick = {
                     viewModel.getNoiThatCT(productsToDisplay[index]._id)
@@ -183,15 +170,6 @@ fun PageNTs(viewModel: ViewModel, lstNTs: List<NoiThat>, it: PaddingValues, id: 
     ) {
         BottomSheetContent(viewModel, onClose = { isDialog = false }, id)
     }
-//        } else {
-//            Text(
-//                text = "Không đủ sản phẩm để hiển thị.",
-//                modifier = Modifier
-//                    .padding(16.dp)
-//                    .clickable {
-//                        isDialog = false
-//                    }
-//            )
         }
     }
 }

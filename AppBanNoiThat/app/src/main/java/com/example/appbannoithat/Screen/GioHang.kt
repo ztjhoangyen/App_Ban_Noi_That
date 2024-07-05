@@ -2,12 +2,14 @@ package com.example.appbannoithat.Screen
 
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,6 +26,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -51,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHangCT
 import com.example.appbannoithat.R
 import com.example.appbannoithat.Server.Server
@@ -68,7 +72,15 @@ fun GioHang(navController: NavController, viewModel: ViewModel) {
     }
     val listGHUser = viewModel.GioHangCT.observeAsState()
     val GHCTs = listGHUser.value ?: emptyList()
+    var tongtien by remember { mutableStateOf(0) }
 
+    LaunchedEffect(GHCTs) {
+       tongtien = GHCTs.sumOf {
+           it.gia * it.so_luong
+       }
+    }
+
+    Log.d("tongtien", "${tongtien}")
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -103,38 +115,76 @@ fun GioHang(navController: NavController, viewModel: ViewModel) {
         bottomBar = {
             BottomAppBar(
                 containerColor = Color.White,
-                modifier = Modifier.background(Color.White),
+                modifier = Modifier
+                    .background(Color.White)
+                    .height(200.dp),
             ) {
                 Column {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         Text(
-                            text = "Tổng"
+                            modifier = Modifier
+                                .weight(1f),
+                            text = "Tổng",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp
                         )
                         Text(
-                            text = "98"
+                            modifier = Modifier.weight(1f),
+                            text = "${tongtien}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp
                         )
                     }
                     Row {
-                        Text(
-                            text = "Xác nhận",
-                            color = Color.White,
+                        Box(
                             modifier = Modifier
+                                .weight(2f)
                                 .padding(10.dp)
-                                .fillMaxWidth()
-                        )
+                                .background(Color.Green)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Green,
+                                    shape = MaterialTheme.shapes.extraLarge
+                                )
+                        ){
+                            Text(
+                                text = "Xác nhận",
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .clickable{
+//                                        navController.navigate("xacNhan")
+                                        navController.navigate("xacNhan/${tongtien}")
+                                    }
+                            )
+                        }
+//                        Text(
+//                            text = "Xác nhận",
+//                            modifier = Modifier
+//                                .padding(10.dp)
+//                                .fillMaxWidth()
+//                                .clickable {
+//                                    navController.navigate("xacNhan")
+////                                    val objHDandCTHD = DonHangReq(
+////                                         phuong_thuc_thanh_toan ,
+////                                     dia_chi_giao_hang ,
+////                                     ghi_chu ,
+////                                     tinh_trang
+////                                    )
+//                                }
+//                        )
                     }
                 }
             }
         }
     ) {
-        ListGH(navController, viewModel, it, GHCTs)
+        ListGH(navController, viewModel, it, GHCTs, id.toString())
     }
 }
 
 @Composable
-fun ListGH(navController: NavController, viewModel: ViewModel, it: PaddingValues, GHCTs: List<GioHangCT>){
+fun ListGH(navController: NavController, viewModel: ViewModel, it: PaddingValues, GHCTs: List<GioHangCT>, id: String){
     LazyColumn(
         modifier = Modifier.padding(it),
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
@@ -142,14 +192,16 @@ fun ListGH(navController: NavController, viewModel: ViewModel, it: PaddingValues
     ) {
         GHCTs?.let {
             items(it.size) { index ->
-                GHItem(it[index], viewModel)
+                GHItem(it[index], viewModel, onDelete ={
+                        viewModel.getdel(it[index]._id, it.toString())
+                })
             }
         }
     }
 }
 
 @Composable
-fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
+fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel, onDelete : () -> Unit){
     var quantity by remember { mutableStateOf(hiohangCT.so_luong) }
     val maxQuantity = hiohangCT.noi_that_id?.so_luong ?: 0
     val context = LocalContext.current
@@ -193,7 +245,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
-                            Log.d("KKKK", "${id.toString()} và ${hiohangCT.noi_that_id._id} và ${quantity} và ${hiohangCT.gia}")
                             coroutineScope.launch {
                                 if (quantity > 1) {
                                     quantity--
@@ -205,10 +256,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                                     )
                                     isVisi = false
                                     viewModel.PutGHCT(id.toString(), objre)
-                                    Log.d(
-                                        "KKKK",
-                                        "${id.toString()} và ${hiohangCT.noi_that_id.toString()} và ${quantity} và ${hiohangCT.gia}"
-                                    )
                                 }
                             }
                         }
@@ -255,10 +302,16 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel){
                 }
             }
         }
+        Log.d("hiohangCT" , "${hiohangCT}")
         Image(
             painter = painterResource(R.drawable.delete),
             contentDescription = null,
             modifier = Modifier
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = onDelete
+                )
                 .size(20.dp)
                 .weight(1f),
             contentScale = ContentScale.Fit

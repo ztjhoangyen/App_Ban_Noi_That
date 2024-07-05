@@ -10,14 +10,40 @@ route.post('/donhang/:id', async function (req, res, next) {
     try {
         const existGH = await gioHang.findOne({ nguoi_dung_id: req.params.id, trang_thai: 1 });
         if (!existGH) {
+            console.log("Không tìm thấy giỏ hàng" + existGH);
             return res.status(404).json({ error: "Không tìm thấy giỏ hàng" });
         }
 
         const listCTSP = await gioHangChiTiet.find({ gio_hang_id: existGH._id });
         if (!listCTSP || listCTSP.length === 0) {
+            console.log("Không tìm thấy chi tiết giỏ hàng");
+
             return res.status(404).json({ error: "Không tìm thấy chi tiết giỏ hàng" });
         }
 
+        // biến kt số lượng tồn kho
+        let quaSL = false
+        for(const item of listCTSP){
+            const sp = await noiThat.findById(item.noi_that_id)
+            if(!sp){
+                console.log("Không tìm thấy sản phẩm với id ");
+
+                return res.status(404).json({ error: `Không tìm thấy sản phẩm với id ${item.noi_that_id}` })
+            }
+            // cập nhật lại sl nội thất tồn tại trong giỏ hàng
+            if (item.so_luong > sp.so_luong) {
+                quaSL = true;
+                await gioHangChiTiet.findByIdAndUpdate(item._id, { so_luong: sp.so_luong });
+            }
+        }
+
+        // sp vượt quá sl nội thất thì yêu cầu vào coi lại giỏ hàng
+        if (quaSL) {
+            console.log("Một số sản phẩm vượt quá số lượng tồn kho. Mình");
+
+            return res.status(400).json({ error: "Một số sản phẩm vượt quá số lượng tồn kho. Mình đã cập nhật lại số lượng trong giỏ hàng. Vui lòng kiểm tra lại giỏ hàng của bạn." });
+        }
+        
         const tongTien = listCTSP.reduce((accumulator, currentValue) => {
             return accumulator + (currentValue.gia * currentValue.so_luong)
         }, 0);
@@ -42,18 +68,17 @@ route.post('/donhang/:id', async function (req, res, next) {
         const listDHCT = listCTSP.map(async item => {
             const sp = await noiThat.findById(item.noi_that_id);
             if (!sp) {
+                console.log("KKhông tìm thấy sản phẩm với id ");
+
                 throw new Error(`Không tìm thấy sản phẩm với id ${item.noi_that_id}`);
             }
             let tongTienCT = item.so_luong * sp.gia;
 
             const dhct = new donHangChiTiets({
                 don_hang_id: donHangSaved._id,
-                // thêm
                 noi_that_id: sp._id,
                 tong_tien: tongTienCT,
                 so_luong: item.so_luong
-                // img: sp.hinh_anh,
-                // mo_ta: sp.mo_ta
             });
 
             return await dhct.save();
@@ -78,6 +103,8 @@ route.put('/donhang/:id/trangthai', async function (req, res, next) {
       
         const isAdmin = req.body.role
         const order = await donHang.findById(hoadonId)
+        console.log("isAdmin" + isAdmin + newStrang_thai);
+
         if (!order) {
             return res.status(404).json({ error: "Không tìm thấy đơn hàng" })
         }
@@ -85,13 +112,19 @@ route.put('/donhang/:id/trangthai', async function (req, res, next) {
         if (isAdmin) {
             order.trang_thai = newStrang_thai
         } else {
-            if (order.trang_thai === "chờ xác nhận" && newStrang_thai === "hủy") {
+            if (order.trang_thai === "Đang xử lý" && newStrang_thai === "Đã hủy") {
                 order.trang_thai = newStrang_thai
+                console.log("newStrang_thai" + newStrang_thai);
+
             } else {
+                console.log("newStrang_thai" + newStrang_thai + order.trang_thai);
+
+                console.log("Bạn không có quyền thay đổi trạng thái đơn hàng này");
                 return res.status(403).json({ error: "Bạn không có quyền thay đổi trạng thái đơn hàng này" })
             }
         }
         const updateddonhang = await order.save()
+        console.log("updateddonhang" + updateddonhang);
 
         res.status(200).json(updateddonhang)
     } catch (err) {
@@ -108,7 +141,8 @@ route.put('/donhang/:id/trangthai', async function (req, res, next) {
 // if(role) thì hỏi xem có danh sách nào để hiện danh sách dh cho admin không //else thì hỏi xem có tồn tại dh của người dùng này không, nếu không thì hiện thông báo là không có
 route.get('/donhang/:userId', async function (req, res, next) {
     try {
-        const role = req.body.role
+        const role = req.query.role
+        // const role = req.body.role
         if(role){
             const listHDtoAd = await donHang.find()
             if(!listHDtoAd || listHDtoAd.length == 0){

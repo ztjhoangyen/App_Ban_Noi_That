@@ -229,17 +229,12 @@ fun LoginForm(
                             passwordErr = "Hãy nhập mật khẩu"
                             hasError = true
                         }
-//                        if (!hasError) {
-//                            if (accountName != null && password != null) {
-                                val accReq = NguoiDungDN(
-//                                    ten_tai_khoan = accountName,
-//                                    mat_khau = password
-                                    ten_tai_khoan = "yenphph34781",
-                                    mat_khau = "12345678"
-                                )
-                                viewModel.postLogin(accReq)
-//                            }
-//                        }
+
+                        val accReq = NguoiDungDN(
+                            ten_tai_khoan = "yenphph34781",
+                            mat_khau = "12345678"
+                        )
+                        viewModel.postLogin(accReq)
                     }
                 )
                 .fillMaxWidth()

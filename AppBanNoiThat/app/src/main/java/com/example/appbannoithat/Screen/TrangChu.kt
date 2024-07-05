@@ -175,7 +175,7 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
             "Home" -> Home(it, viewModel, navController)
             "Thư mục" -> ThuMuc(it, viewModel, navController)
             "Giỏ hàng" -> UITrangChu(it)
-            "Tôi" -> tam(it)
+            "Tôi" -> DonHang(navController, viewModel)
         }
     }
 }
@@ -194,6 +194,7 @@ fun UITrangChu(it: PaddingValues){
             textAlign = TextAlign.Center
         )
     }
+
 }
 
 

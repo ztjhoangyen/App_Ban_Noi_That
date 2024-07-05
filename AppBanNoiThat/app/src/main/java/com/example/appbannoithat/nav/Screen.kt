@@ -7,7 +7,7 @@ enum class Screen(val route : String) {
     Register("register"),
     Login("login"),
     GioHang("gioHang"),
-    ForYou("forYou"),
-    Search("search"),
-    testThu("testThu")
+    XacNhan("xacNhan"),
+    DonHang("donHang"),
+    ThongTinDonHang("thongTinDonHang")
 }
