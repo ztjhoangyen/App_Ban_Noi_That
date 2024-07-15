@@ -319,7 +319,8 @@ fun RegisterForm(
                                 email = email,
                                 mat_khau = password,
                                 ho_ten = fullname,
-                                role = false
+                                role = false,
+                                socketId = ""
                             )
                             viewModel.postRegister(accRegister)
                         }

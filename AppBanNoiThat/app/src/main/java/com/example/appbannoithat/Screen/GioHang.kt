@@ -204,7 +204,6 @@ fun ListGH(navController: NavController, viewModel: ViewModel, it: PaddingValues
 fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel, onDelete : () -> Unit){
     var quantity by remember { mutableStateOf(hiohangCT.so_luong) }
     val maxQuantity = hiohangCT.noi_that_id?.so_luong ?: 0
-    val context = LocalContext.current
 // tự động cập nhật lại các Composable liên quan, giúp giao diện luôn đồng bộ với trạng thái dữ liệu hiện tại.
     var isVisi by remember { mutableStateOf(false) }
 //derivedStateOf giúp tối ưu hóa hiệu suất bằng cách chỉ tính toán lại giá trị của nó khi các trạng thái mà nó phụ thuộc thay đổi.
@@ -219,10 +218,11 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel, onDelete : () -> Unit){
             .height(100.dp)
     ) {
         Image(
-            painter = rememberImagePainter(hiohangCT.noi_that_id.hinh_anh),
+            painter = rememberImagePainter(hiohangCT.noi_that_id.hinh_anh[0]),
             contentDescription = null,
             modifier = Modifier
                 .weight(1f)
+                .padding(start = 10.dp)
                 .fillMaxWidth(),
             contentScale = ContentScale.Fit
         )
@@ -230,6 +230,7 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel, onDelete : () -> Unit){
 
         Column(
             modifier = Modifier
+                .padding(start = 10.dp)
                 .weight(1f),
         ) {
             Text(
@@ -302,7 +303,6 @@ fun GHItem(hiohangCT : GioHangCT, viewModel: ViewModel, onDelete : () -> Unit){
                 }
             }
         }
-        Log.d("hiohangCT" , "${hiohangCT}")
         Image(
             painter = painterResource(R.drawable.delete),
             contentDescription = null,

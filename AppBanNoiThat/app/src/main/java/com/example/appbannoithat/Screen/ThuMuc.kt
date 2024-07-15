@@ -2,6 +2,7 @@ package com.example.appbannoithat.Screen
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +18,14 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,10 +55,12 @@ fun ThuMuc(it: PaddingValues, viewModel: ViewModel, navController: NavController
                 .padding(it)
         ) {
             items(danhmucs.size) {
+                selectedDanhMucId.value = danhmucs[it]._id
+
                 ItemDanhMuc(
+                    selectedDanhMucId.value,
                     danhmucs[it],
                     onClickItem = {
-                        selectedDanhMucId.value = danhmucs[it]._id
                         viewModel.getLoaiNT(danhmucs[it]._id)
                     }
                 )
@@ -99,10 +105,18 @@ fun ThuMuc(it: PaddingValues, viewModel: ViewModel, navController: NavController
 }
 
 @Composable
-fun ItemDanhMuc(danhM: DanhMuc, onClickItem: () -> Unit) {
-    Log.d("Danh Muc", "${danhM.ten_danh_muc}")
+fun ItemDanhMuc(selectedDanhMucId: String?, danhM: DanhMuc, onClickItem: () -> Unit) {
+    val isSelected = selectedDanhMucId == danhM._id
+
+    val backgroundColor = if (isSelected) Color.White else Color.LightGray
+
     Column(
-        modifier = Modifier.clickable { onClickItem() }
+        modifier = Modifier
+            .clickable {
+                onClickItem()
+            }
+            .padding(8.dp)
+            .background(color = backgroundColor)
     ) {
         Text(
             text = "${danhM.ten_danh_muc}"
@@ -113,7 +127,6 @@ fun ItemDanhMuc(danhM: DanhMuc, onClickItem: () -> Unit) {
     }
 }
 
-//, onItemNoiThat: () -> Unit
 @Composable
 fun ItemLoaiNT(Item: LoaiNoiThat, onListNoiThat: () -> Unit) {
     Box(

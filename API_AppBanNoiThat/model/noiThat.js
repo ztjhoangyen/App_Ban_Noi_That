@@ -13,8 +13,11 @@ const NoiThatsSchema = new mongoose.Schema({
     so_luong: {
         type: Number
     },
+    // hinh_anh: {
+    //     type: String
+    // },
     hinh_anh: {
-        type: String
+        type: Array
     },
     loai_noi_that_id: {
         type: String,

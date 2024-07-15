@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.appbannoithat.Model.NguoiDungDN
+import com.example.appbannoithat.Model.updateSocket
 import com.example.appbannoithat.ViewModel.ViewModel
 import kotlinx.coroutines.CoroutineScope
 
@@ -122,10 +124,23 @@ fun LoginForm(
 
     val context = LocalContext.current
 
+    val socketId = viewModel.socketID.observeAsState()
+
+    val acc = viewModel.acc.observeAsState()
+    val idUser = acc.value?._id
     if (isLoggedIn) {
         passwordErr = ""
         accountNameErr = ""
         Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+        val objUp = idUser?.let {
+            updateSocket(
+                id = it,
+                socket =  socketId.value.toString()
+            )
+        }
+        if (objUp != null) {
+            viewModel.updateSocket(objUp)
+        }
     }
 
     Column(
@@ -234,6 +249,7 @@ fun LoginForm(
                             ten_tai_khoan = "yenphph34781",
                             mat_khau = "12345678"
                         )
+
                         viewModel.postLogin(accReq)
                     }
                 )

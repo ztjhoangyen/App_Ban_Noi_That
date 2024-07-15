@@ -11,7 +11,7 @@ router.get('/noiThat/:id', async function(req, res) {
         }
         res.status(200).json(exitsGet)
     } catch (err) {
-        console.error("Error:", err);
+        console.error("Error:", err)
         res.status(500).json({ error: "Lỗi máy chủ nội bộ." });
     }
 });
@@ -26,24 +26,45 @@ router.get('/noiThatCT/:id', async function(req, res) {
         }
         res.status(200).json(exitsGetCT)
     } catch (err) {
-        console.error("Error:", err);
-        res.status(500).json({ error: "Lỗi máy chủ nội bộ." });
+        console.error("Error:", err)
+        res.status(500).json({ error: "Lỗi máy chủ nội bộ." })
     }
-});
+})
 
 // http://localhost:3000/api/timKiem?query=
 router.get("/timKiem", async function(req, res, next) {
     try {
         const query = req.query.query;
         // $options: "i": options là tùy chọn, i là không phân biệt hoa, thường
-        const timKiemNoiThat = await noiThats.find({ten_noi_that : { $regex: query, $options: "i" } });
+        const timKiemNoiThat = await noiThats.find({ten_noi_that : { $regex: query, $options: "i" } })
 
-        res.status(200).json(timKiemNoiThat); 
-        console.log(timKiemNoiThat);
+        if (timKiemNoiThat.length === 0) {
+            return res.status(404).json({ error: "Không tìm thấy nội thất" });
+        }
+        
+        res.status(200).json(timKiemNoiThat)
+        console.log(timKiemNoiThat)
     } catch (e) {
-        res.status(500).json({ error: "Lỗi máy chủ cục bộ" });
+        res.status(500).json({ error: "Lỗi máy chủ cục bộ" })
     }
 })
+
+// router.get("/image/:id", async function (req, res, next){
+//     try {
+//         const id = req.params.id
+
+//         const dsnoithat = await noiThats.findById(id)
+
+//         if (dsnoithat != null) {
+//             return res.status(404).json({ error: "Không tìm thấy anh nội thất" });
+//         }
+//         const images = dsnoithat.hinh_anh
+//         res.status(200).json(images); 
+//         console.log(images);
+//     } catch (e) {
+//         res.status(500).json({ error: "Lỗi máy chủ cục bộ" });
+//     }
+// })
 
 
 module.exports = router

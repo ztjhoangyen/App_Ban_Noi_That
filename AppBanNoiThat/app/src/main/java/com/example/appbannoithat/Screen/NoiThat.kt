@@ -18,8 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,14 +41,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import com.example.appbannoithat.Images
 import com.example.appbannoithat.Model.NoiThat
+import com.example.appbannoithat.Model.YeuThich
+import com.example.appbannoithat.R
 import com.example.appbannoithat.Server.Server
 import com.example.appbannoithat.ViewModel.ViewModel
 import com.example.appbannoithat.component.DialogDefaul
@@ -74,9 +77,15 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
     var isDialog by remember { mutableStateOf(false) }
     val GHErr by viewModel.GHErr
 
+    val acc = viewModel.acc.observeAsState()
+    val id = acc.value?._id
+
+    if (id != null) {
+        viewModel.getFavUser(id)
+    }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
             TopAppBar(
                 modifier = Modifier.background(Color.White),
@@ -86,7 +95,7 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
                         modifier = Modifier
                             .width(240.dp)
                             .clickable {
-
+                                navController.navigate("timKiem")
                             }
                             .border(
                                 width = 1.dp,
@@ -110,22 +119,71 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
                         )
                     }
                 },
-                actions = {
+                navigationIcon = {
                     IconButton(onClick = {}) {
                         Icon(
-                            imageVector = Icons.Filled.ShoppingCart,
+                            imageVector = Icons.Filled.KeyboardArrowLeft,
                             contentDescription = null,
                             modifier = Modifier
                                 .clickable(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() },
                                     onClick = {
-
+                                        navController.navigateUp()
                                     }
                                 )
                                 .size(16.dp),
                             tint = Color.Black
-                        )}
+                        )
+                    }
+                },
+                actions = {
+
+                    val listfaByUser = viewModel.favUser.observeAsState()
+                    val isFavorited = listfaByUser.value?.any { it.noi_that_id == objNT.value?._id } ?: false
+                   Row {
+                       Image(
+                           painter = painterResource(id = R.drawable.bag),
+                           contentDescription = null,
+                           modifier = Modifier
+                               .clickable(
+                                   indication = null,
+                                   interactionSource = remember { MutableInteractionSource() },
+                                   onClick = {
+                                      navController.navigate("gioHang")
+                                   }
+                               )
+                               .padding(start = 15.dp)
+                               .size(20.dp)
+                       )
+
+                       Image(
+                           painter = painterResource(id = if (isFavorited) R.drawable.red else R.drawable.heart),
+                           contentDescription = null,
+                           modifier = Modifier
+                               .clickable(
+                                   indication = null,
+                                   interactionSource = remember { MutableInteractionSource() },
+                                   onClick = {
+                                       if (isDN) {
+                                           val objFav = id?.let {
+                                               YeuThich(
+                                                   nguoi_dung_id = it,
+                                                   noi_that_id = objNT.value?._id ?: ""
+                                               )
+                                           }
+                                           if (objFav != null) {
+                                               viewModel.postFav(id, objFav)
+                                           }
+                                       } else {
+                                           isDialog = !isDialog
+                                       }
+                                   }
+                               )
+                               .padding(start = 15.dp)
+                               .size(20.dp)
+                       )
+                   }
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -138,84 +196,90 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                  Box(
-                      modifier = Modifier
-                          .weight(1f)
-                          .padding(10.dp)
-                          .border(
-                              width = 1.dp,
-                              color = Color.Black,
-                              shape = MaterialTheme.shapes.large
-                          )
-                  ){
-                      Row(
-                          modifier = Modifier
-                              .padding(10.dp)
-                              .fillMaxWidth(),
-                          horizontalArrangement = Arrangement.SpaceAround
-                      ){
-                          Text(
-                              text = "-",
-                              fontWeight = FontWeight.Bold,
-                              modifier = Modifier
-                                  .clickable {
-                                      if (soLuong > 1) {
-                                          soLuong--
-                                      }
-                                  }
-                          )
-                          Text(
-                              fontWeight = FontWeight.Bold,
-                              text = "${soLuong}"
-                          )
-                          Text(
-                              text = "+",
-                              fontWeight = FontWeight.Bold,
-                              modifier = Modifier
-                                  .clickable {
-                                      if (soLuong < maxQuantity!!) {
-                                          soLuong++
-                                          isVisi = false
-                                      } else {
-                                          isVisi = true
-                                      }
-                                  },
-                              color = plusColor
-                          )
-                      }
-                  }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Color.Black,
+                                shape = MaterialTheme.shapes.large
+                            )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Text(
+                                text = "-",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .clickable {
+                                        if (soLuong > 1) {
+                                            soLuong--
+                                        }
+                                    }
+                            )
+                            Text(
+                                fontWeight = FontWeight.Bold,
+                                text = "${soLuong}"
+                            )
+                            Text(
+                                text = "+",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .clickable {
+                                        if (soLuong < maxQuantity!!) {
+                                            soLuong++
+                                            isVisi = false
+                                        } else {
+                                            isVisi = true
+                                        }
+                                    },
+                                color = plusColor
+                            )
+                        }
+                    }
                     Box(
                         modifier = Modifier
                             .weight(2f)
                             .padding(10.dp)
-                            .background(Color.Green)
+                            .background(Color.Green, MaterialTheme.shapes.extraLarge)
                             .border(
                                 width = 1.dp,
                                 color = Color.Green,
                                 shape = MaterialTheme.shapes.extraLarge
                             )
-                    ){
+                    ) {
                         Text(
                             modifier = Modifier
                                 .padding(10.dp)
                                 .clickable {
                                     if (isDN) {
-                                       if(DN?._id != null){
-                                           val objTest = objNT.value?.let {
-                                               Server.Test(
-                                                   nguoi_dung_id = DN?._id!!,
-                                                   noi_that_id = it._id,
-                                                   so_luong = soLuong,
-                                                   gia = it.gia
-                                               )
-                                           }
+                                        if (DN?._id != null) {
+                                            val objTest = objNT.value?.let {
+                                                Server.Test(
+                                                    nguoi_dung_id = DN?._id!!,
+                                                    noi_that_id = it._id,
+                                                    so_luong = soLuong,
+                                                    gia = it.gia
+                                                )
+                                            }
 
-                                           if (objTest != null) {
-                                               viewModel.Test(objTest)
-                                               Toast.makeText(context, "${GHErr}", Toast.LENGTH_SHORT).show()
-                                               navController.navigate("gioHang")
-                                           }
-                                       }
+                                            if (objTest != null) {
+                                                viewModel.Test(objTest)
+                                                Toast
+                                                    .makeText(
+                                                        context,
+                                                        "${GHErr}",
+                                                        Toast.LENGTH_SHORT
+                                                    )
+                                                    .show()
+                                                navController.navigate("gioHang")
+                                            }
+                                        }
                                     } else {
                                         isDialog = !isDialog
                                     }
@@ -227,6 +291,7 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
                                     shape = MaterialTheme.shapes.extraLarge
                                 ),
                             color = Color.White,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             text = "Thêm vào giỏ hàng"
                         )
@@ -244,46 +309,85 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
             )
         }
     }
-    if(isDialog){
+    if (isDialog) {
         DialogDefaul(
             onClickClose = {
                 isDialog = false
-                           },
+            },
             onNav = {
                 navController.navigate("login")
-                    },
+            },
             title = "Hãy đăng nhập để thêm vào giỏ hàng"
         )
     }
 }
 
 @Composable
-fun ItemNoiThat(viewModel: ViewModel, it: PaddingValues, objNT: NoiThat, soluong: Int, navController: NavHostController){
+fun ItemNoiThat(
+    viewModel: ViewModel,
+    it: PaddingValues,
+    objNT: NoiThat,
+    soluong: Int,
+    navController: NavHostController,
+) {
 
     Column(
         modifier = Modifier
             .padding(it)
             .clickable {
 
-        }
+            }
     ) {
-        Image(
-            painter = rememberImagePainter(objNT.hinh_anh),
-            contentDescription = null,
+
+        Images(viewModel)
+
+        Column(
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Text(
+                text = "${objNT.ten_noi_that}",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            Text(
+                text = "Giá: ${objNT.gia} đ",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            Text(
+                text = "Số lượng: ${objNT.so_luong}",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
+
+        Spacer(
             modifier = Modifier
+                .height(1.dp)
                 .fillMaxWidth()
-                .height(200.dp),
-            contentScale = ContentScale.Fit
+                .background(Color.DarkGray)
         )
 
         Text(
-            text = "${objNT.ten_noi_that}"
+            text = "Mô tả: ${objNT.mo_ta}",
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Normal,
+            modifier = Modifier
+                .padding(vertical = 4.dp)
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp)
         )
-        Text(
-            text = "${objNT.gia}"
-        )
-        Text(
-            text = "${objNT.so_luong}"
+        Spacer(
+            modifier = Modifier
+                .height(1.dp)
+                .fillMaxWidth()
+                .background(Color.DarkGray)
         )
     }
 }

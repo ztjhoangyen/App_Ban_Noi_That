@@ -29,6 +29,9 @@ const NguoiDungsSchema = new mongoose.Schema({
     role:{
         type: Boolean,
         default: false
+    },
+    socketId:{
+        type: String
     }
 },{
     timestamps: true

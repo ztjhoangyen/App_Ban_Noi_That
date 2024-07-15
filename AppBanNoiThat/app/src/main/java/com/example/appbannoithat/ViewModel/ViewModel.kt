@@ -1,17 +1,16 @@
 package com.example.appbannoithat.ViewModel
 
-import android.os.Handler
-import android.os.Looper
+
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.appbannoithat.MainActivity
 import com.example.appbannoithat.Model.Account
+import com.example.appbannoithat.Model.ChatReq
+import com.example.appbannoithat.Model.ChatRes
 import com.example.appbannoithat.Model.DanhMuc
 import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangCT
@@ -20,21 +19,28 @@ import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHang
 import com.example.appbannoithat.Model.GioHangCT
 import com.example.appbannoithat.Model.LoaiNoiThat
+import com.example.appbannoithat.Model.Message
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
 import com.example.appbannoithat.Model.NoiThat
 import com.example.appbannoithat.Model.Slideshow
+import com.example.appbannoithat.Model.TotalFav
+import com.example.appbannoithat.Model.YeuThich
+import com.example.appbannoithat.Model.textChatReq
+import com.example.appbannoithat.Model.updateSocket
 import com.example.appbannoithat.Server.RetrofitBanNoiThat
 import com.example.appbannoithat.Server.Server
 import com.example.appbannoithat.nav.SortState
+import com.example.appbannoithat.socket.SocketManger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import vn.zalopay.sdk.ZaloPayError
-import vn.zalopay.sdk.ZaloPaySDK
-import vn.zalopay.sdk.listeners.PayOrderListener
+import org.json.JSONArray
+import org.json.JSONObject
 
 class ViewModel : ViewModel() {
+    private val  socketManger = SocketManger()
+
     private val _danhMuc = MutableLiveData<List<DanhMuc>>()
     val danhmuc: LiveData<List<DanhMuc>> = _danhMuc
 
@@ -77,6 +83,15 @@ class ViewModel : ViewModel() {
     private val _getDHCT = MutableLiveData<List<DonHangCT>>()
     val getDHCT: LiveData<List<DonHangCT>> = _getDHCT
 
+    private val _TotalFav = MutableLiveData<List<TotalFav>>()
+    val TotalFav: LiveData<List<TotalFav>> = _TotalFav
+
+    private val _favUser = MutableLiveData<List<YeuThich>>()
+    val favUser: LiveData<List<YeuThich>> = _favUser
+
+    private val _searchResults = MutableStateFlow<List<NoiThat>>(emptyList())
+    val searchResults: StateFlow<List<NoiThat>> = _searchResults
+
     //thong bao
     private val _loaiNTErr = MutableLiveData<String>()
     val loaiNTErr: LiveData<String> = _loaiNTErr
@@ -97,8 +112,14 @@ class ViewModel : ViewModel() {
     private val _GHErr = mutableStateOf<String?>(null)
     val GHErr: State<String?> get() = _GHErr
 
-
     init {
+        socketManger.connect()
+        listForSocketId()
+//thêm
+//        socketManger.on("receiver") { jsonArray ->
+//            handleReceiverEvent(jsonArray)
+//        }
+
         getDM()
     }
 
@@ -504,5 +525,232 @@ class ViewModel : ViewModel() {
         }
     }
 
+    fun postFav(id: String, yeuThich: YeuThich){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.postFav(yeuThich)
+                if (response.isSuccessful) {
+                    getFavUser(id)
+                    Log.d("postFav", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "postFav",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("postFav", "Not Success ${e.message}")
+            }
+        }
+    }
+
+
+    fun gettotalFav(){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.gettotalFav()
+                if (response.isSuccessful) {
+                    _TotalFav.value = response.body()
+                    Log.d("gettotalFav", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "gettotalFav",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("gettotalFav", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getFav(){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getFav()
+                if (response.isSuccessful) {
+                    Log.d("getFav", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "getFav",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("getFav", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getFavUser(id: String){
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getFavUser(id)
+                if (response.isSuccessful) {
+                    _favUser.value = response.body()
+                    Log.d("getFav", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "getFav",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("getFav", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun searchNoiThat(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.gettimKiem(query)
+                if (response.isSuccessful) {
+                    _searchResults.value = response.body() ?: emptyList()
+                    Log.d("searchNoiThat", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "searchNoiThat",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _searchResults.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("searchNoiThat", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    //-----------------
+    private val _socketID = MutableLiveData<String>()
+    val socketID: LiveData<String> = _socketID
+
+    private val _chatRess = MutableLiveData<ChatRes>()
+    val chatRess: LiveData<ChatRes> = _chatRess
+
+    private val _textChatRess = MutableLiveData<List<Message>>()
+    val textChatRess: LiveData<List<Message>> = _textChatRess
+
+    fun listForSocketId() {
+        socketManger.onSocketIdReceived { socketId ->
+            _socketID.postValue(socketId)
+            Log.d("_socketID", "Success - ${_socketID.value}")
+
+        }
+    }
+
+    fun updateSocket(updateSocket: updateSocket) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.updateSocket(updateSocket)
+                if (response.isSuccessful) {
+                    Log.d("_socketID", "Success - ${response.body()}")
+                    Log.d("updateSocket", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "updateSocket",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("updateSocket", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun posttextChat(textChatReq: textChatReq) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.posttextChat(textChatReq)
+                if (response.isSuccessful) {
+                    _textChatRess.value = response.body()
+                    Log.d("posttextChat", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "posttextChat",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _textChatRess.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("posttextChat", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun postchat(chatReq: ChatReq) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.postchat(chatReq)
+                if (response.isSuccessful) {
+                    _chatRess.value = response.body()
+                    Log.d("postchat", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "postchat",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("postchat", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getmessages(idSender: String, idReceiver: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getmessages(idSender, idReceiver)
+                if (response.isSuccessful) {
+                    _textChatRess.value = response.body()
+                    Log.d("getmessages", "Success - ${response.message()}")
+                } else {
+                    Log.d(
+                        "getmessages",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _textChatRess.value = response.body()
+                }
+            } catch (e: Exception) {
+                Log.e("getmessages", "Not Success ${e.message}")
+            }
+        }
+    }
+
+//    fun on(evt: String, callBack: (arg: JSONObject) -> Unit) {
+//        socketManger.on(evt) { json ->
+//            // val arg = json.ge
+//            viewModelScope.launch {
+//                callBack(json)
+//            }
+//
+//        }
+//    }
+//thêm
+    fun on(evt: String, callBack: (args: JSONArray) -> Unit) {
+        socketManger.on(evt) { args ->
+            val jsonArray = args[0] as JSONArray
+            viewModelScope.launch {
+                callBack(jsonArray)
+            }
+        }
+    }
+     fun handleReceiverEvent(jsonArray: JSONArray) {
+        val messageList = mutableListOf<Message>()
+        for (i in 0 until jsonArray.length()) {
+            val jsonObject = jsonArray.getJSONObject(i)
+            val message = Message(
+                content = jsonObject.getString("content")
+            )
+            Log.d("newMessage ok", "newMessage")
+
+            messageList.add(message)
+        }
+
+        // Update StateFlow
+        viewModelScope.launch {
+            _textChatRess.value = messageList
+        }
+    }
 
 }

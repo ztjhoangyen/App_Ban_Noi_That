@@ -65,6 +65,7 @@ dependencies {
         "include" to listOf("*.aar", "*.jar"),
         "exclude" to listOf("")
     )))
+//    implementation(libs.androidx.material3.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,7 +74,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.8")
     implementation ("io.coil-kt:coil-compose:2.6.0")
     implementation ("com.squareup.retrofit2:retrofit:2.11.0")
 
@@ -81,11 +82,13 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Accompanist Pager
-    implementation("com.google.accompanist:accompanist-pager:0.30.1")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.30.1")
+    implementation("com.google.accompanist:accompanist-pager:0.34.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0")
 
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.2.0")
-    implementation("com.squareup.okhttp3:okhttp:4.6.0")
-    implementation("commons-codec:commons-codec:1.14")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.6.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("commons-codec:commons-codec:1.17.0")
+
+    implementation ("io.socket:socket.io-client:2.1.1")
 
 }

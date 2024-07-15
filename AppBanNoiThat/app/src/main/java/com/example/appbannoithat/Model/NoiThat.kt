@@ -8,7 +8,7 @@ data class NoiThat(
     val mo_ta : String,
     val gia : Int,
     val so_luong : Int,
-    val hinh_anh : String,
+    val hinh_anh : List<String>,
     val loai_noi_that_id : String,
     val ngay_nhap_kho : Date
 )

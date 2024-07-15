@@ -1,6 +1,8 @@
 package com.example.appbannoithat.Server
 
 import com.example.appbannoithat.Model.Account
+import com.example.appbannoithat.Model.ChatReq
+import com.example.appbannoithat.Model.ChatRes
 import com.example.appbannoithat.Model.DanhMuc
 import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangCT
@@ -8,10 +10,15 @@ import com.example.appbannoithat.Model.DonHangPUT
 import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHangCT
 import com.example.appbannoithat.Model.LoaiNoiThat
+import com.example.appbannoithat.Model.Message
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
 import com.example.appbannoithat.Model.NoiThat
 import com.example.appbannoithat.Model.Slideshow
+import com.example.appbannoithat.Model.TotalFav
+import com.example.appbannoithat.Model.YeuThich
+import com.example.appbannoithat.Model.textChatReq
+import com.example.appbannoithat.Model.updateSocket
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -88,5 +95,34 @@ interface Server {
 
     @DELETE("delGHCT/{id}")
     suspend fun delGHCT(@Path("id") id: String): Response<Void>
+
+    @POST("yeuthich")
+    suspend fun postFav(@Body yeuThich: YeuThich): Response<Void>
+
+    @GET("totalFav")
+    suspend fun gettotalFav(): Response<List<TotalFav>>
+
+    @GET("yeuthich")
+    suspend fun getFav(): Response<Void>
+
+    @GET("yeuthich/{id}")
+    suspend fun getFavUser(@Path("id") id: String): Response<List<YeuThich>>
+
+    @GET("timKiem")
+    suspend fun gettimKiem(@Query("query") query: String): Response<List<NoiThat>>
+
+    @POST("UpdateSocketId")
+    suspend fun updateSocket(@Body updateSocket: updateSocket): Response<Void>
+
+//    danh sách và ai nhận thì text ở bên đó còn ai gửi thì text bên gửi
+    @POST("chat")
+    suspend fun postchat(@Body chatReq: ChatReq): Response<ChatRes>
+
+    @POST("textChat")
+    suspend fun posttextChat(@Body textChatReq: textChatReq): Response<List<Message>>
+
+    @GET("messages")
+    suspend fun getmessages(@Query("idSender") idSender: String,  @Query("idReceiver") idReceiver: String): Response<List<Message>>
+
 
 }

@@ -1,6 +1,5 @@
 package com.example.appbannoithat.Screen
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +42,6 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.appbannoithat.MainActivity

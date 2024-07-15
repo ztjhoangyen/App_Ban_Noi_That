@@ -9,5 +9,7 @@ enum class Screen(val route : String) {
     GioHang("gioHang"),
     XacNhan("xacNhan"),
     DonHang("donHang"),
-    ThongTinDonHang("thongTinDonHang")
+    ThongTinDonHang("thongTinDonHang"),
+    TimKiem("timKiem"),
+    Chat("chat")
 }

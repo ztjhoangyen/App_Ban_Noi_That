@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,7 +54,7 @@ class MainActivity : ComponentActivity() {
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         setContent {
-            val viewModel: ViewModel = viewModel()
+            val viewModel: ViewModel by viewModels()
 
             val navController = rememberNavController()
             navController(viewModel, navController, this@MainActivity)
@@ -239,13 +240,33 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShowHI(viewModel: ViewModel) {
     val imageUrlsState by viewModel.slide.collectAsState()
-    val imageUrls = imageUrlsState?.map { it.url } ?: emptyList() // Convert to list of URLs
+    val imageUrls = imageUrlsState?.map { it.url } ?: emptyList()
 
     LaunchedEffect(Unit) {
         viewModel.getSlideshow()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .height(200.dp),
+    ) {
         ImageSlider(imageUrls = imageUrls)
+    }
+}
+
+@Composable
+fun Images(viewModel: ViewModel) {
+    val imageUrlsState by viewModel.NoiThatCT.observeAsState()
+    val imageUrls = imageUrlsState?.hinh_anh
+
+    LaunchedEffect(Unit) {
+        viewModel.getSlideshow()
+    }
+
+    Box(modifier = Modifier
+        .height(200.dp),
+    ) {
+        if (imageUrls != null) {
+            ImageSlider(imageUrls = imageUrls)
+        }
     }
 }

@@ -4,9 +4,13 @@
  * Module dependencies.
  */
 
+
 var app = require('../app');
 var debug = require('debug')('api-appbannoithat:server');
 var http = require('http');
+//  khởi tạo máy chủ HTTP và Socket.IO:
+const socketIo = require("socket.io");
+const nguoiDung = require('../model/nguoiDung');
 
 /**
  * Get port from environment and store in Express.
@@ -28,6 +32,35 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+/**
+ * Socket.IO setup
+ */
+
+//  khởi tạo để kết nối giữa máy chủ và máy khách
+const io = socketIo(server);
+
+io.on("connection", (socket) => {
+  console.log("idSocket", socket.id)
+  socket.emit("socketId", socket.id)
+
+  socket.on("sendMessage", (message) => {
+    io.sockets.emit("returnMessage", message)
+  })
+
+  socket.on('disconnect', async () => {
+    await nguoiDung.updateOne(
+      { socketId: socket.id },
+      {
+        $set: {
+          socketId: ""
+        }
+      }
+    )
+  })
+
+
+})
 
 /**
  * Normalize a port into a number, string, or false.

@@ -8,33 +8,31 @@ Content-Type: application/json
     "tinh_trang": "Chưa xử lý"
 }
 
-
 ###
-GET http://localhost:3000/api/donhangchitiet/6684cee9e3398c33b9a631dc
+GET http://localhost:3000/api/totalFav
 Content-Type: application/json
+ 
 
 ###
-PUT http://localhost:3000/api/donhang/6683ea0d67aa8fa076df6cc5/trangthai
+PUT http://localhost:3000/api/UpdateSocketId
 Content-Type: application/json
 
 {
-    "trangthai": "KKK",
-    "role": true
+    "id": "66812ad058f41685a1eae751",
+    "socket": 
 } 
 
 ###
 POST http://localhost:3000/api/donhang/66812a5658f41685a1eae74d
 Content-Type: application/json
 
-{
-   
+{  
   {
     "phuong_thuc_thanh_toan": "Thanh toán khi nhận hàng",
     "dia_chi_giao_hang": "123 Đường ABC, Quận XYZ, Thành phố HCM",
     "ghi_chu": "Giao hàng vào buổi sáng nếu được",
     "tinh_trang": "Chưa xử lý"
 }
-
 }
 
 

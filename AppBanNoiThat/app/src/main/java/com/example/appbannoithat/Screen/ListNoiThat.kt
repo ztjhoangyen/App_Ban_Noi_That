@@ -240,7 +240,7 @@ fun ItemNoiThat(Item: NoiThat, onClick : () -> Unit) {
         modifier = Modifier.clickable { onClick() }
     ) {
         Image(
-            painter = rememberImagePainter(Item.hinh_anh),
+            painter = rememberImagePainter(Item.hinh_anh[0]),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
