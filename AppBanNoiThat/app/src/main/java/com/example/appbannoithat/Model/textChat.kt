@@ -19,9 +19,18 @@ data class textChatReq(
 )
 
 data class Message(
-    val content: String
+    val content: String,
+    val _id: String
 )
 
-data class TextChatRess(
-    val messages: List<Message>
+//lấy danh sách user
+data class UserResponse(
+    val status: Boolean,
+    val result: List<Account>
+)
+
+data class MessageR(
+    val senderId: String,
+    val receiverId: String,
+    val content: String
 )

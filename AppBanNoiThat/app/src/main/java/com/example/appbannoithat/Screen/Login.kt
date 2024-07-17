@@ -235,19 +235,16 @@ fun LoginForm(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
                     onClick = {
-                        var hasError = false
                         if (accountName.isEmpty()) {
                             accountNameErr = "Hãy nhập tên tài khoản"
-                            hasError = true
                         }
                         if (password.isEmpty()) {
                             passwordErr = "Hãy nhập mật khẩu"
-                            hasError = true
                         }
 
                         val accReq = NguoiDungDN(
-                            ten_tai_khoan = "yenphph34781",
-                            mat_khau = "12345678"
+                            ten_tai_khoan = accountName,
+                            mat_khau = password
                         )
 
                         viewModel.postLogin(accReq)

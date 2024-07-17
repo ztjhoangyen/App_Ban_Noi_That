@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,15 +25,14 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,34 +45,48 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.appbannoithat.Model.ChatReq
 import com.example.appbannoithat.Model.Message
-import com.example.appbannoithat.Model.textChatReq
+import com.example.appbannoithat.Model.MessageR
 import com.example.appbannoithat.R
 import com.example.appbannoithat.ViewModel.ViewModel
-import org.json.JSONArray
 import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Chat(navController: NavHostController, viewModel: ViewModel) {
+fun Chat(
+    navController: NavHostController,
+    viewModel: ViewModel,
+    taikhN: String,
+    idNhan: String?,
+) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     var text by remember { mutableStateOf("") }
-//lấy trường idRoom
+
     val acc = viewModel.acc.observeAsState()
     val id = acc.value?._id
-    val chatRess = viewModel.chatRess.observeAsState()
+    val nameHT = acc.value?.ten_tai_khoan
+//    viewModel.listenForMessages()
 
-    val chat = chatRess.value?._id
-    Log.d(" ngoài", "newMessage")
+//đặt if else cái nào nên load lại dữ liệu
+    if(idNhan == idNhan){
+        LaunchedEffect(Unit) {
+            viewModel.on("message") { msg: JSONObject ->
+                if (id != null) {
+                    if (idNhan != null) {
+                        viewModel.requestMessages(id, idNhan)
+                    }
+                    Log.d("Gửi ", "Gửi lần 1")
 
-    viewModel.on("newMessage"){jsonArray ->
-        viewModel.handleReceiverEvent(jsonArray)
-        Log.d("newMessage", "newMessage")
+                    viewModel.listenForMessages()
+                }
+                Log.e("listenForMessages", "ok")
+
+            }
+        }
     }
+
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -161,22 +172,15 @@ fun Chat(navController: NavHostController, viewModel: ViewModel) {
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-//                                    val obj = chatRess.value?.let {
-//                                        if (id != null) {
-                                            val obj = chat?.let {
-                                                textChatReq(
-                                                    idRoom = it,
-                                                    content = text,
-                                                    idRecever = "667dbfcbe8426273772ec45d",
-                                                    idSender = id.toString()
-                                                )
-                                            }
-//                                        }
-//                                    }
-                                    if (obj != null) {
-                                        viewModel.posttextChat(obj)
-                                        text = ""
+                                    Log.d("VV receiver", "${nameHT}-${taikhN}-${text}-${id}-${idNhan}")
+
+                                    if (nameHT != null && id != null && idNhan != null) {
+                                        viewModel.sendMessage(nameHT, taikhN, text, id, idNhan)
+                                        Log.d(" receiver", "${nameHT}-${taikhN}-${text}-${id}-${idNhan}")
+                                        Log.d("Gửi ", "Gửi lần 2")
+
                                     }
+                                    text = ""
                                 }
                             )
                     )
@@ -189,33 +193,31 @@ fun Chat(navController: NavHostController, viewModel: ViewModel) {
 }
 
 
-
 @Composable
 fun CommentColumn(
     navController: NavHostController,
     viewModel: ViewModel,
     innerPadding: PaddingValues,
 ) {
-    val textChatRess = viewModel.textChatRess.observeAsState()
-    val textChats = textChatRess.value ?: emptyList()
+    val messagesDD = viewModel.messages.observeAsState()
+    val danhsach = messagesDD.value ?: emptyList()
 
     LazyColumn(
         modifier = Modifier.padding(innerPadding)
-    ){
+    ) {
 //        để gọi được ra size thì cần xét đk nó không null
-        items(textChats.size){
-            CommentItem(navController, textChats[it], viewModel)
+        items(danhsach.size) { message ->
+            CommentItem(navController, danhsach[message], viewModel)
         }
     }
 }
-
-
+//chuyển trang thì gửi lần 2 mới được
 @Composable
-fun CommentItem(navController: NavHostController, it : Message, viewModel: ViewModel){
+fun CommentItem(navController: NavHostController, it: MessageR, viewModel: ViewModel) {
     Column(
         modifier = Modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
+    ) {
         Text(
             text = "${it.content}",
             fontWeight = FontWeight.Bold
@@ -243,3 +245,31 @@ fun CommentItem(navController: NavHostController, it : Message, viewModel: ViewM
 //        )
     }
 }
+
+
+// LaunchedEffect(Unit) {
+//        if(idngdung.isNotEmpty()){
+//            if (id != null) {
+//                viewModel.getDanhSachTextChat(idngdung, id)
+//                viewModel.listenForMessage()
+//            }
+//            if (id != null) {
+//                Log.d("idngdung ${idngdung}", "${id} id")
+//                viewModel.listenForMessage()
+//                //                viewModel.getmessages(id, "667dbfcbe8426273772ec45d")
+//            }
+//        }else{
+//            viewModel.getDanhSachTextChat(idngdung, "667dbfcbe8426273772ec45d")
+//
+//            if (id != null) {
+//                Log.d("idngdung 667dbfcbe8426273772ec45d ${idngdung}", "${id} id")
+//                viewModel.listenForMessage()
+////                viewModel.getmessages(id, "667dbfcbe8426273772ec45d")
+//            }
+//        }
+//    }
+
+
+//click gửi
+//   chatRess.value?.let { viewModel.sendMessage(it._id, text) }
+//   viewModel.listenForMessages()

@@ -4,13 +4,15 @@
  * Module dependencies.
  */
 
-
 var app = require('../app');
 var debug = require('debug')('api-appbannoithat:server');
 var http = require('http');
 //  khởi tạo máy chủ HTTP và Socket.IO:
 const socketIo = require("socket.io");
 const nguoiDung = require('../model/nguoiDung');
+const textchat = require('../model/textChat');
+const chat = require('../model/chat');
+const message = require('../model/messages');
 
 /**
  * Get port from environment and store in Express.
@@ -39,14 +41,13 @@ server.on('listening', onListening);
 
 //  khởi tạo để kết nối giữa máy chủ và máy khách
 const io = socketIo(server);
+module.exports.io = io
 
 io.on("connection", (socket) => {
   console.log("idSocket", socket.id)
   socket.emit("socketId", socket.id)
 
-  socket.on("sendMessage", (message) => {
-    io.sockets.emit("returnMessage", message)
-  })
+
 
   socket.on('disconnect', async () => {
     await nguoiDung.updateOne(
@@ -57,6 +58,70 @@ io.on("connection", (socket) => {
         }
       }
     )
+  })
+ 
+  socket.on('message', async (msg) => {
+    try {
+      const { senderId, receiverId, content } = msg
+
+      const senderUser = await nguoiDung.findOne({ ten_tai_khoan: senderId })
+      const receiverUser = await nguoiDung.findOne({ ten_tai_khoan: receiverId })
+
+      if (senderUser && receiverUser) {
+        const newMessage = new message ({
+          senderId: senderUser._id,
+          receiverId: receiverUser._id,
+          content
+        })
+
+        await newMessage.save();
+
+        if (receiverUser.socketId) {
+          io.to(receiverUser.socketId).emit('message', {
+            senderId,
+            receiverId,
+            content
+          })
+        }
+
+        io.emit('message', {
+          senderId,
+          receiverId,
+          content
+        });
+        console.log("newMessage./newMessage", newMessage)
+
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  })
+
+  socket.on('getMessages', async (msg) => {
+    try {
+      const { senderId, receiverId } = msg;
+      const messages = await message.find({
+        $or: [
+          { senderId: senderId, receiverId: receiverId },
+          { senderId: receiverId, receiverId: senderId }
+        ]
+      });
+     
+      const senderUser = await nguoiDung.findOne({ _id: senderId });
+      const receiverUser = await nguoiDung.findOne({ _id: receiverId });
+
+      socket.emit('messagesList', messages);
+      console.log("receiverUser.socketId", messages)
+
+      if (receiverUser.socketId) {
+        io.to(receiverUser.socketId).emit('messagesList', messages);
+      }
+      console.log("receiverUser.socketId", messages)
+
+    } catch (error) {
+      console.error(error);
+      io.emit('error', { message: 'Failed to fetch messages' });
+    }
   })
 
 
@@ -121,3 +186,96 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+// =====================
+
+
+
+// io.on("connection", (socket) => {
+  // console.log("idSocket", socket.id)
+//   socket.emit("socketId", socket.id)
+
+//   socket.on("sendMessage", (message) => {
+//     io.sockets.emit("returnMessage", message)
+//   })
+
+//   socket.on('disconnect', async () => {
+//     await nguoiDung.updateOne(
+//       { socketId: socket.id },
+//       {
+//         $set: {
+//           socketId: ""
+//         }
+//       }
+//     )
+//   })
+ 
+
+//   socket.on('sendMessage', async (msg) => {
+//     try {
+//       const { idRoom, content } = msg
+
+//       const objTextChat = await textchat.findOneAndUpdate(
+//         { idRoom: idRoom },
+//         {
+//           $push: {
+//             message: {
+//               content: content
+//             },
+//           },
+//         },
+//         { upsert: true, new: true }
+//       )
+
+//       // socket.to(objTextChat.idRoom).emit('newMessage', objTextChat.message);
+
+//       // Đang bị vấn đề gửi tin nhắn tới đâu nó load tin nhắn của đứa ấn gửi đó , ví dụ, đang nhắn tin với tài khoản này nhảy sang tài khoản khác thì lúc gửi người nhận nó load lại hết tin nhắn của đứa đang gửi
+//       // Gửi tin nhắn mới tới client của người nhận
+//       // Chú Ý: nó không  load lại do chưa đặt emit
+//       io.emit('newMessage', objTextChat.message)
+//       // io.to(objTextChat.idRoom).emit('newMessage', objTextChat.message)
+
+//       // console.log("objTextChat.message" + objTextChat.message)
+//     } catch (error) {
+//       console.error(error)
+//       io.emit('error', { message: 'Failed to fetch messages' })
+//     }
+//   })
+// // Coi thử if else nếu cùng idRom thì mới cho get còn không thì cho cút
+//   socket.on('message', async(msg) =>{
+//     try {
+//       const { idSender, idReceiver } = msg
+//       console.log("idSender" + idSender);
+//       console.log("idReceiver" + idReceiver);
+
+//       const chats = await chat.findOne({
+//           // idSender: idSender,
+//           // idRecever: idReceiver
+//           $or: [
+//             { idSender: idSender, idRecever: idReceiver },
+//             { idSender: idReceiver, idRecever: idSender }
+//         ]
+//       });
+
+//       if (!chats) {
+//           console.log("chat" + chats);
+//           // return res.status(404).json({ message: 'Không tìm thấy cuộc trò chuyện' });
+//       }
+
+//       const texts = await textchat.find({idRoom: chats._id})
+
+//       if (texts.length === 0) {   
+//         io.emit('Lỗi: Mảng rỗng')
+//       }
+//       // console.log("texts" +  texts[0].message);
+
+//       io.emit('getmessages', texts[0].message)
+//       // io.to(chats._id).emit('getmessages', texts[0].message)
+      
+//   } catch (error) {
+//       console.error('Lỗi khi lấy tin nhắn:', error);
+//       // res.status(500).json({ message: 'Lỗi server khi lấy tin nhắn' });
+//   }
+//   })
+
+// })

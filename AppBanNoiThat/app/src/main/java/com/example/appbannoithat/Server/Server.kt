@@ -36,9 +36,6 @@ interface Server {
     @GET("loaiNoiThat/{id}")
     suspend fun getLoaiNT(@Path("id") id: String): Response<List<LoaiNoiThat>>
 
-//    @POST("gioHang")
-//    suspend fun postGioHang(gioHangReq: GioHangReq): Response<GioHang>
-
     @GET("noiThat/{id}")
     suspend fun getNoiThats(@Path("id") id: String): Response<List<NoiThat>>
 
@@ -115,14 +112,24 @@ interface Server {
     suspend fun updateSocket(@Body updateSocket: updateSocket): Response<Void>
 
 //    danh sách và ai nhận thì text ở bên đó còn ai gửi thì text bên gửi
-    @POST("chat")
-    suspend fun postchat(@Body chatReq: ChatReq): Response<ChatRes>
 
-    @POST("textChat")
-    suspend fun posttextChat(@Body textChatReq: textChatReq): Response<List<Message>>
+//    @POST("textChat")
+//    suspend fun posttextChat(@Body textChatReq: textChatReq): Response<List<Message>>
+//
+//    @GET("messages")
+//    suspend fun getmessages(@Query("idSender") idSender: String,  @Query("idReceiver") idReceiver: String): Response<List<Message>>
 
-    @GET("messages")
-    suspend fun getmessages(@Query("idSender") idSender: String,  @Query("idReceiver") idReceiver: String): Response<List<Message>>
+    @GET("nguoidung")
+    suspend fun getnguoidung(@Query("id") id: String): Response<List<Account>>
+
+    @GET("AllloaiNoiThat")
+    suspend fun getAllloaiNoiThat(): Response<List<LoaiNoiThat>>
 
 
 }
+
+
+//=========== r sẽ test lại thôi
+
+//@POST("chat")
+//suspend fun postchat(@Body chatReq: ChatReq): Response<ChatRes>

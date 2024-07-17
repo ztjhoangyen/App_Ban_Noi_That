@@ -146,7 +146,7 @@ route.get('/donhang/:userId', async function (req, res, next) {
         if(role){
             const listHDtoAd = await donHang.find()
             if(!listHDtoAd || listHDtoAd.length == 0){
-                return res.status(404).json({error : "Không tồn tại hóa đơn"})
+                return res.status(404).json({error : "Không tồn tại đơn hàng"})
             }
             console.log("Admin", listHDtoAd);
 

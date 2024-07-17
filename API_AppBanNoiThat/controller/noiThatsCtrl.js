@@ -12,9 +12,9 @@ router.get('/noiThat/:id', async function(req, res) {
         res.status(200).json(exitsGet)
     } catch (err) {
         console.error("Error:", err)
-        res.status(500).json({ error: "Lỗi máy chủ nội bộ." });
+        res.status(500).json({ error: "Lỗi máy chủ nội bộ." })
     }
-});
+})
 
 router.get('/noiThatCT/:id', async function(req, res) {
     try {
@@ -22,7 +22,7 @@ router.get('/noiThatCT/:id', async function(req, res) {
         
         if(!exitsGetCT){
             res.status(404).json({error: "Nội thất null"})
-            retur
+            return
         }
         res.status(200).json(exitsGetCT)
     } catch (err) {
@@ -49,22 +49,19 @@ router.get("/timKiem", async function(req, res, next) {
     }
 })
 
-// router.get("/image/:id", async function (req, res, next){
-//     try {
-//         const id = req.params.id
-
-//         const dsnoithat = await noiThats.findById(id)
-
-//         if (dsnoithat != null) {
-//             return res.status(404).json({ error: "Không tìm thấy anh nội thất" });
-//         }
-//         const images = dsnoithat.hinh_anh
-//         res.status(200).json(images); 
-//         console.log(images);
-//     } catch (e) {
-//         res.status(500).json({ error: "Lỗi máy chủ cục bộ" });
-//     }
-// })
-
+router.get('/noiThats', async function(req, res, next) {
+    try {
+        const allnoithat = await noiThats.find()
+        
+        if(allnoithat.length == 0){
+            res.status(404).json({error: "Danh sách nội thất trống"})
+            return
+        }
+        res.status(200).json(allnoithat)
+    } catch (err) {
+        console.error("Error:", err)
+        res.status(500).json({ error: "Lỗi máy chủ nội bộ." })
+    }
+})
 
 module.exports = router

@@ -1,7 +1,5 @@
 package com.example.appbannoithat.Model
 
-import com.google.gson.annotations.SerializedName
-
 
 data class Account (
     val _id: String,

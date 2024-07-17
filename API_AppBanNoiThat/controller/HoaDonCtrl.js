@@ -10,5 +10,5 @@ route.post("/hoadon", async function(req, res, next){
         res.status(500).json({ error: "Lỗi máy chủ nội bộ." });
     }
 })
-
+// xuất hóa đơn thì hỏi xem còn 
 module.exports = route

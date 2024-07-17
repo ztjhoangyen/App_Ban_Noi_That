@@ -52,7 +52,7 @@ import com.example.appbannoithat.ViewModel.ViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
+fun TrangChu (navController: NavHostController, viewModel: ViewModel, ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     var istab by remember { mutableStateOf("Home") }
@@ -60,6 +60,7 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
     val acc = viewModel.acc.observeAsState()
     val id = acc.value?._id
 
+    val idngdung = ""
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -104,18 +105,8 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-                                    val objChat = id?.let {
-                                        ChatReq(
-                                            idSender = it,
-                                            idRecever = "667dbfcbe8426273772ec45d"
-                                        )
-                                    }
-                                    if (objChat != null) {
-                                        viewModel.postchat(objChat)
-                                        viewModel.getmessages(id, "667dbfcbe8426273772ec45d")
-                                        Log.d("objChat", "${objChat}")
-                                    }
-                                    navController.navigate("chat")
+
+                                    navController.navigate("chat/${idngdung}")
                                 }
                             )
                             .padding(start = 15.dp)
@@ -221,24 +212,24 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel) {
         when(istab){
             "Home" -> Home(it, viewModel, navController)
             "Thư mục" -> ThuMuc(it, viewModel, navController)
-            "Giỏ hàng" -> UITrangChu(it)
+            "Giỏ hàng" -> UITrangChu(it, viewModel, navController)
             "Tôi" -> DonHang(navController, viewModel)
         }
     }
 }
 
-@Composable
-fun UITrangChu(it: PaddingValues){
-    Column(
-        modifier = Modifier
-            .padding(it)
-    ) {
-        Text(
-            text = "Bộ sưu tập của chúng tôi mang đến đa dạng phong cách, từ tối giản hiện đại đến thanh lịch cổ điển, giúp bạn dễ dàng tìm thấy những món đồ hoàn hảo để tô điểm cho ngôi nhà. Cho dù bạn cần một chiếc ghế sofa sang trọng cho phòng khách, bàn ăn thanh lịch cho những bữa tiệc hay chiếc giường ấm cúng cho giấc ngủ ngon, nội thất của chúng tôi đều được chế tác tỉ mỉ từ vật liệu cao cấp, đảm bảo độ bền đẹp và tinh tế.",
-            modifier = Modifier
-                .padding(25.dp)
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-    }
-}
+
+
+//val objChat = id?.let {
+//    ChatReq(
+//        idSender = it,
+//        idRecever = "667dbfcbe8426273772ec45d"
+//    )
+//}
+//if (objChat != null) {
+//    viewModel.postchat(objChat)
+//    viewModel.getDanhSachTextChat(id, "667dbfcbe8426273772ec45d")
+//    viewModel.listenForMessage()
+////                                        viewModel.getmessages(id, "667dbfcbe8426273772ec45d")
+//    Log.d("objChat", "${objChat}")
+//}

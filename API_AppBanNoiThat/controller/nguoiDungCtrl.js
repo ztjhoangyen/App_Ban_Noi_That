@@ -79,4 +79,23 @@ router.post("/UpdateSocketId", async (req, res) =>{
     }
 })
 
+router.get('/nguoidung', async (req, res) => {
+    try {
+        const { id } = req.query;
+
+        const ngdungs = await nguoiDungs.find()
+
+        if (!ngdungs) {
+            return res.status(404).json({ error: 'Không tồn tại dữ liệu người dùng.' })
+        }
+        let result = ngdungs.filter((item) => item._id != id);
+
+        res.status(200).json(result)
+    } catch (err) {
+        console.error("Error:", err)
+        res.status(500).json({ error: "Lỗi máy chủ nội bộ." })
+    }
+})
+
+
 module.exports = router

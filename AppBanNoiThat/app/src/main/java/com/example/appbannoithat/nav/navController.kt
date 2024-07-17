@@ -32,8 +32,14 @@ fun navController(viewModel: ViewModel, navController: NavHostController, mainAc
                 ListNoiThat(navController, viewModel, id)
             }
         }
+        composable("chat/{taikhN}/{idNhan}") { backStackEntry ->
+            val taikhN = backStackEntry.arguments?.getString("taikhN")
+            val idNhan = backStackEntry.arguments?.getString("idNhan")
+            if (taikhN != null && idNhan != null) {
+                Chat(navController, viewModel, taikhN, idNhan)
+            }
+        }
         composable(Screen.NoiThat.route) { NoiThat(navController, viewModel) }
-        composable(Screen.Chat.route) { Chat(navController, viewModel) }
         composable(Screen.TimKiem.route) { TimKiem(navController, viewModel) }
         composable(Screen.Register.route) { Register(navController, viewModel) }
         composable(Screen.Login.route) { Login(navController, viewModel) }
