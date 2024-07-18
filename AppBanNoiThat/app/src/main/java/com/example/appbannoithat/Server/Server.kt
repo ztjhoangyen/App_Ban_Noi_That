@@ -9,6 +9,9 @@ import com.example.appbannoithat.Model.DonHangCT
 import com.example.appbannoithat.Model.DonHangPUT
 import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHangCT
+import com.example.appbannoithat.Model.HoaDon
+import com.example.appbannoithat.Model.HoaDonChiTietRes
+import com.example.appbannoithat.Model.HoaDonRes
 import com.example.appbannoithat.Model.LoaiNoiThat
 import com.example.appbannoithat.Model.Message
 import com.example.appbannoithat.Model.NguoiDungDK
@@ -124,6 +127,18 @@ interface Server {
 
     @GET("AllloaiNoiThat")
     suspend fun getAllloaiNoiThat(): Response<List<LoaiNoiThat>>
+
+    @POST("hdAndHdct")
+    suspend fun posthdAndHdct(@Body hoaDon: HoaDon): Response<Void>
+
+    @GET("hoadon")
+    suspend fun gethoadon(): Response<List<HoaDonRes>>
+
+    @GET("thongtindonhang/{id}")
+    suspend fun getthongtindonhang(@Path("id") id: String): Response<DonHang>
+
+    @GET("hoadonchitiet/{id}")
+    suspend fun gethoadonchitiet(@Path("id") id: String): Response<List<HoaDonChiTietRes>>
 
 
 }

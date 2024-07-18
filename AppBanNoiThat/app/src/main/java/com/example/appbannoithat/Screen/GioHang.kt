@@ -2,7 +2,6 @@ package com.example.appbannoithat.Screen
 
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,9 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.BottomAppBar
@@ -42,19 +39,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
-import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHangCT
 import com.example.appbannoithat.R
 import com.example.appbannoithat.Server.Server
@@ -154,26 +148,10 @@ fun GioHang(navController: NavController, viewModel: ViewModel) {
                                 modifier = Modifier
                                     .padding(10.dp)
                                     .clickable{
-//                                        navController.navigate("xacNhan")
                                         navController.navigate("xacNhan/${tongtien}")
                                     }
                             )
                         }
-//                        Text(
-//                            text = "Xác nhận",
-//                            modifier = Modifier
-//                                .padding(10.dp)
-//                                .fillMaxWidth()
-//                                .clickable {
-//                                    navController.navigate("xacNhan")
-////                                    val objHDandCTHD = DonHangReq(
-////                                         phuong_thuc_thanh_toan ,
-////                                     dia_chi_giao_hang ,
-////                                     ghi_chu ,
-////                                     tinh_trang
-////                                    )
-//                                }
-//                        )
                     }
                 }
             }

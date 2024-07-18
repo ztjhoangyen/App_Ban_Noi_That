@@ -243,8 +243,6 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
         }
 
         Spacer(modifier = Modifier.height(10.dp))
-//    =====================
-
 
         Text(
             text = "Chọn phương thức thanh toán",
@@ -315,9 +313,6 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
 
                                 isDialogZaloPay = !isDialogZaloPay
                             }else{
-//                                if (diachiErr.isEmpty()) {
-//                                    diachiErr = "Bắt buộc"
-//                                }
                                 val dh = DonHangReq(
                                     phuong_thuc_thanh_toan = selectedOption,
                                     dia_chi_giao_hang = diachi,
@@ -325,7 +320,7 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
                                     tinh_trang = "Chưa thanh toán"
                                 )
                                 if (idUser != null) {
-                                    viewModel.postDH(idUser._id, dh)
+                                    viewModel.postDH(idUser._id, dh, idUser.role)
                                 }
                             }
                         }
@@ -342,7 +337,6 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
         mainActivity.showDialogZaloPay(
             mainActivity,
             onClickClose = {
-
             },
             title = "Tiêu đề",
             tongtien,

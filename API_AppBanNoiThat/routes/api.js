@@ -12,6 +12,7 @@ const DonHangCtrl = require('../controller/DonHangCtrl')
 const slideShowCtrl = require('../controller/slideShowCtrl')
 const yeuThichCtrl = require('../controller/yeuThichCtrl')
 const chatCtrl = require('../controller/chatCtrl')
+const HoaDonCtrl = require('../controller/HoaDonCtrl')
 
 
 router.use(nguoiDungCtrl)
@@ -25,6 +26,7 @@ router.use(DonHangCtrl)
 router.use(slideShowCtrl)
 router.use(yeuThichCtrl)
 router.use(chatCtrl)
+router.use(HoaDonCtrl)
 
 
 module.exports = router;

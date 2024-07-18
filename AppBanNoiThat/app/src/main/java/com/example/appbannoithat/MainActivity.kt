@@ -71,7 +71,6 @@ class MainActivity : ComponentActivity() {
     //    Dialog Zalo Pay
     @Composable
     fun DialogZaloPay(onClickClose: () -> Unit, title: String, tongtien: Int?, viewModel: ViewModel, selectedOption: String, diachi: String, ghichu: String) {
-//     val viewModel : ViewModel = viewModel()
         val DN = viewModel.acc.observeAsState()
         val idUser = DN.value
         Dialog(
@@ -138,7 +137,7 @@ class MainActivity : ComponentActivity() {
                                                     tinh_trang = "Đã thanh toán"
                                                 )
                                                 if (idUser != null) {
-                                                    viewModel.postDH(idUser._id, dh)
+                                                    viewModel.postDH(idUser._id, dh, idUser.role)
                                                 }
                                                 ZaloPaySDK.getInstance().payOrder(
                                                     this@MainActivity,
@@ -155,7 +154,6 @@ class MainActivity : ComponentActivity() {
                                                                 "Thanh toán thành công",
                                                                 Toast.LENGTH_SHORT
                                                             ).show()
-//                                                            paymentResult = "Thanh toán thành công"
                                                             Log.d(
                                                                 "ZaloPay",
                                                                 "Payment succeeded: payUrl=$payUrl, transToken=$transToken, appTransID=$appTransID"
@@ -195,8 +193,6 @@ class MainActivity : ComponentActivity() {
                                                             )
                                                         }
                                                     })
-
-//                                                paymentResult = "Đã tạo đơn hàng thành công và đang đợi đơn hàng được thanh toán"
                                             } else {
                                                 Toast.makeText(
                                                     this@MainActivity,

@@ -8,6 +8,7 @@ import com.example.appbannoithat.MainActivity
 import com.example.appbannoithat.Screen.Chat
 import com.example.appbannoithat.Screen.DonHang
 import com.example.appbannoithat.Screen.GioHang
+import com.example.appbannoithat.Screen.HoaDon
 import com.example.appbannoithat.Screen.ListNoiThat
 import com.example.appbannoithat.Screen.Login
 import com.example.appbannoithat.Screen.NoiThat
@@ -45,6 +46,7 @@ fun navController(viewModel: ViewModel, navController: NavHostController, mainAc
         composable(Screen.Login.route) { Login(navController, viewModel) }
         composable(Screen.GioHang.route) { GioHang(navController, viewModel) }
         composable(Screen.DonHang.route) { DonHang(navController, viewModel) }
+        composable(Screen.HoaDon.route) { HoaDon(navController, viewModel) }
         composable(Screen.ThongTinDonHang.route) { ThongTinDonHang(navController, viewModel) }
         composable("xacNhan/{tongtien}") { backStackEntry ->
             val tongtienString = backStackEntry.arguments?.getString("tongtien")

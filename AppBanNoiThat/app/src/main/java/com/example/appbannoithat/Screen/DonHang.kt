@@ -1,9 +1,8 @@
 package com.example.appbannoithat.Screen
 
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,9 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangPUT
 import com.example.appbannoithat.ViewModel.ViewModel
+import com.example.appbannoithat.component.ClickDonHang
+import com.example.appbannoithat.component.DonHangItemView
 import com.example.appbannoithat.component.tabHD
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,11 +47,16 @@ fun DonHang(navController: NavController, viewModel: ViewModel) {
     var istab by remember { mutableStateOf("Đang xử lý") }
     val acc = viewModel.acc.observeAsState()
     val user = acc.value
+
     if (user != null) {
-        viewModel.getDH(user._id, false)
+        viewModel.getDH(user._id, user.role)
     }
+
     val listHD = viewModel.getDH.observeAsState()
     val hoadons = listHD.value ?: emptyList()
+
+    viewModel.gethoadon()
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -91,90 +96,59 @@ fun DonHang(navController: NavController, viewModel: ViewModel) {
         },
         content = {
             Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(it)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(it)
             ) {
+                ClickDonHang(navController, viewModel)
                 tabHD(istab) { selectedTab ->
                     istab = selectedTab
                 }
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier
+                        .height(350.dp)
+                ) {
                     items(hoadons.filter { it.trang_thai == istab }) { donHang ->
                         DonHangItemView(
+                            viewModel,
                             donHang,
                             onHuy = {
-                            val obj = DonHangPUT(
-                                role = false,
-                                trangthai = "Đã hủy"
-                            )
+                                val obj = DonHangPUT(
+                                    role = false,
+                                    trangthai = "Đã hủy"
+                                )
                                 if (user != null) {
                                     viewModel.putDH(user._id, donHang._id, obj)
                                 }
+                                Log.d("obj", "${obj}")
+
                             },
-                            onXacnhan =  {
+                            onXacnhan = {
                                 val obj = DonHangPUT(
-                                    role = false,
+                                    role = true,
                                     trangthai = "Đã xác nhận"
                                 )
                                 if (user != null) {
                                     viewModel.putDH(user._id, donHang._id, obj)
                                 }
                             },
-                            onChiTiet ={
+                            onChiTiet = {
                                 viewModel.getDHCT(donHang._id)
+                                viewModel.getthongtindonhang(donHang._id)
                                 navController.navigate("thongTinDonHang")
+                            },
+                            onDaXacNhan = {
+                                val obj = DonHangPUT(
+                                    role = true,
+                                    trangthai = "Đã xuất hóa đơn"
+                                )
+                                if (user != null) {
+                                    viewModel.putDH(user._id, donHang._id, obj)
+                                }
                             })
                     }
                 }
             }
         }
     )
-}
-
-@Composable
-fun DonHangItemView(
-    item: DonHang,
-    onHuy: () -> Unit,
-    onXacnhan: () -> Unit,
-    onChiTiet: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .clickable(
-                onClick = onChiTiet
-            )
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-//        đã hủy thì không có gì cả
-//        đã xác nhận thì kh có gì cả, đang xử lý thì bên người dùng hiện mỗi hủy thôi, admin hiện cả 2
-        Text(
-            text = item._id,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            color = Color.DarkGray
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = if(item.trang_thai != "Đã hủy" && item.trang_thai != "Đã xác nhận") "Hủy đơn hàng" else "",
-            fontWeight = FontWeight.Normal,
-            fontSize = 14.sp,
-            color = Color.Gray,
-            modifier = Modifier
-                .clickable(
-                    onClick = onHuy
-                )
-        )
-//        Thêm quyền người dùng vào để xét đk
-        if (item.trang_thai == "Đang xử lý" ) {
-            Text(
-                text = "Xác nhận đơn hàng",
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                color = Color.Gray,
-                modifier = Modifier.clickable(onClick = onXacnhan)
-            )
-        }
-    }
 }

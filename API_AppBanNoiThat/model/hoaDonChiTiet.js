@@ -5,15 +5,9 @@ const HoaDonChiTietSchema = new mongoose.Schema({
         type: String,
         ref: 'hoaDons'
     },
-    noi_that_id: {
+    don_hang_ct_id: {
         type: String, 
-        ref:'noiThats'
-    },
-    so_luong: {
-        type: Number
-    },
-    gia: {
-        type: Number
+        ref:'donHangChiTiet'
     }
 },{
     timestamps: true

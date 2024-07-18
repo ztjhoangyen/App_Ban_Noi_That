@@ -30,7 +30,7 @@ data class DonHangCT(
     val don_hang_id : String,
     val ten_noi_that : String,
     val mo_ta : String,
-    val img : String,
+    val img : List<String>,
     val so_luong : Int,
     val tong_tien : Int
 )

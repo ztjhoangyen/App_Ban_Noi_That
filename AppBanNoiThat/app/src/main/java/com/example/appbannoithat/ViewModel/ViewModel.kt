@@ -9,8 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appbannoithat.Model.Account
-import com.example.appbannoithat.Model.ChatReq
-import com.example.appbannoithat.Model.ChatRes
 import com.example.appbannoithat.Model.DanhMuc
 import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangCT
@@ -18,8 +16,10 @@ import com.example.appbannoithat.Model.DonHangPUT
 import com.example.appbannoithat.Model.DonHangReq
 import com.example.appbannoithat.Model.GioHang
 import com.example.appbannoithat.Model.GioHangCT
+import com.example.appbannoithat.Model.HoaDon
+import com.example.appbannoithat.Model.HoaDonChiTietRes
+import com.example.appbannoithat.Model.HoaDonRes
 import com.example.appbannoithat.Model.LoaiNoiThat
-import com.example.appbannoithat.Model.Message
 import com.example.appbannoithat.Model.MessageR
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
@@ -103,6 +103,15 @@ class ViewModel : ViewModel() {
     private val _allloainoithat = MutableLiveData<List<LoaiNoiThat>>()
     val allloainoithat: LiveData<List<LoaiNoiThat>> = _allloainoithat
 
+    private val _gethoadon = MutableLiveData<List<HoaDonRes>>()
+    val gethoadon: LiveData<List<HoaDonRes>> = _gethoadon
+
+    private val _thongtindh = MutableLiveData<DonHang>()
+    val thongtindh: LiveData<DonHang> = _thongtindh
+
+    private val _hdct = MutableLiveData<List<HoaDonChiTietRes>>()
+    val hdct: LiveData<List<HoaDonChiTietRes>> = _hdct
+
     //thong bao
     private val _loaiNTErr = MutableLiveData<String>()
     val loaiNTErr: LiveData<String> = _loaiNTErr
@@ -122,6 +131,7 @@ class ViewModel : ViewModel() {
 
     private val _GHErr = mutableStateOf<String?>(null)
     val GHErr: State<String?> get() = _GHErr
+
 
     init {
         socketManger.connect()
@@ -438,13 +448,14 @@ class ViewModel : ViewModel() {
         }
     }
 
-    fun postDH(id: String, donHangReq: DonHangReq) {
+    fun postDH(id: String, donHangReq: DonHangReq, role: Boolean) {
         viewModelScope.launch {
             try {
                 val response = RetrofitBanNoiThat().server.postDH(id, donHangReq)
                 if (response.isSuccessful) {
                     //Xóa giỏ hàng
                     _GioHangCT.value = emptyList()
+                    getDH(id, role)
                     Log.d("VM_postDH", "Success")
                 } else {
                     when (response.code()) {
@@ -671,7 +682,84 @@ class ViewModel : ViewModel() {
         }
     }
 
-    //-----------------
+    fun posthdAndHdct(hoaDon: HoaDon) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.posthdAndHdct(hoaDon)
+                if (response.isSuccessful) {
+                    Log.d("VM_hd", "Success")
+                } else {
+                    Log.d(
+                        "VM_hd",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("VM_hd", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun gethoadon() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.gethoadon()
+                if (response.isSuccessful) {
+                    _gethoadon.value = response.body()
+                    Log.d("gethd", "Success")
+                } else {
+                    Log.d(
+                        "gethd",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _gethoadon.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("gethd", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getthongtindonhang(id: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getthongtindonhang(id)
+                if (response.isSuccessful) {
+                    _thongtindh.value = response.body()
+                    Log.d("ttdh", "Success")
+                } else {
+                    Log.d(
+                        "ttdh",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("ttdh", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun gethdct(id: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.gethoadonchitiet(id)
+                if (response.isSuccessful) {
+                    _hdct.value = response.body()
+                    Log.d("gethdct", "Success")
+                } else {
+                    Log.d(
+                        "gethdct",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _hdct.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("gethdct", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    //-----------------gạch
 
 
     fun listForSocketId() {
@@ -762,6 +850,8 @@ class ViewModel : ViewModel() {
 
         socketManger.emit("getMessages", messageRequest)
     }
+
+
 
 
 }

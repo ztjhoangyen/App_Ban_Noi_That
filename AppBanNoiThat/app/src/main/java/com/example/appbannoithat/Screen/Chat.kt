@@ -32,7 +32,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.appbannoithat.Model.Message
 import com.example.appbannoithat.Model.MessageR
 import com.example.appbannoithat.R
 import com.example.appbannoithat.ViewModel.ViewModel
@@ -188,13 +186,13 @@ fun Chat(
             }
         }
     ) {
-        CommentColumn(navController, viewModel, it)
+        ChatColumn(navController, viewModel, it)
     }
 }
 
 
 @Composable
-fun CommentColumn(
+fun ChatColumn(
     navController: NavHostController,
     viewModel: ViewModel,
     innerPadding: PaddingValues,
@@ -207,46 +205,48 @@ fun CommentColumn(
     ) {
 //        để gọi được ra size thì cần xét đk nó không null
         items(danhsach.size) { message ->
-            CommentItem(navController, danhsach[message], viewModel)
+            ChatItem(navController, danhsach[message], viewModel)
         }
     }
 }
 //chuyển trang thì gửi lần 2 mới được
 @Composable
-fun CommentItem(navController: NavHostController, it: MessageR, viewModel: ViewModel) {
-    Column(
-        modifier = Modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            text = "${it.content}",
-            fontWeight = FontWeight.Bold
-        )
-//        Text(
-//            text = "20-98-392",
-//            color = Color.DarkGray
-//        )
+fun ChatItem(navController: NavHostController, message: MessageR, viewModel: ViewModel) {
+    val acc = viewModel.acc.observeAsState()
+    val id = acc.value?._id
+
+    val isSentByAcc = message.senderId == id
+
+//    Column(
+//        modifier = Modifier.padding(8.dp),
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
 //        Text(
 //            text = "${it.content}",
-//            fontSize = 15.sp
+//            fontWeight = FontWeight.Bold
 //        )
-
-//        OutlinedButton(onClick = {
-//            viewModel.getReply(it._idComment)
-//            navController.navigate("reply/${it._idComment}")
-//        }) {
-//            Text("Phản hồi")
-//        }
-//        Spacer(
-//            modifier = Modifier
-//                .height(1.dp)
-//                .fillMaxWidth()
-//                .background(Color.LightGray)
-//        )
+//    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isSentByAcc) Arrangement.End else Arrangement.Start
+    ) {
+        Box(
+            modifier = Modifier.padding(8.dp),
+            contentAlignment = if (isSentByAcc) Alignment.CenterEnd else Alignment.CenterStart
+        ) {
+            Text(
+                text = message.content,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 
 
+
+
+
+//--------------thử làm sau
 // LaunchedEffect(Unit) {
 //        if(idngdung.isNotEmpty()){
 //            if (id != null) {

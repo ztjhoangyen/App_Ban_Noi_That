@@ -1,11 +1,8 @@
-POST http://localhost:3000/api/donhang/66812a5658f41685a1eae74d
+POST http://localhost:3000/api/hdAndHdct
 Content-Type: application/json
 
- {
-    "phuong_thuc_thanh_toan": "Thanh toán khi nhận hàng",
-    "dia_chi_giao_hang": "123 Đường ABC, Quận XYZ, Thành phố HCM",
-    "ghi_chu": "Giao hàng vào buổi sáng nếu được",
-    "tinh_trang": "Chưa xử lý"
+{
+    "don_hang_id": "66984db1626da276edaab27e"
 }
 
 ###
