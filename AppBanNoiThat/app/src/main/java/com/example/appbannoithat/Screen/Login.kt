@@ -132,6 +132,7 @@ fun LoginForm(
         passwordErr = ""
         accountNameErr = ""
         Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+        navController.navigate("trangchu")
         val objUp = idUser?.let {
             updateSocket(
                 id = it,

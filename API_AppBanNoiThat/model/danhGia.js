@@ -5,9 +5,9 @@ const DanhGiasSchema = new mongoose.Schema({
         type: String,
         ref: 'nguoiDungs'
     },
-    noi_that_id: {
+    hoa_don_id: {
         type: String,
-        ref: 'noiThats'
+        ref: 'hoaDons'
     },
     diem: {
         type: Number

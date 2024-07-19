@@ -256,34 +256,38 @@ fun NoiThat(navController: NavHostController, viewModel: ViewModel) {
                         Text(
                             modifier = Modifier
                                 .padding(10.dp)
-                                .clickable {
-                                    if (isDN) {
-                                        if (DN?._id != null) {
-                                            val objTest = objNT.value?.let {
-                                                Server.Test(
-                                                    nguoi_dung_id = DN?._id!!,
-                                                    noi_that_id = it._id,
-                                                    so_luong = soLuong,
-                                                    gia = it.gia
-                                                )
-                                            }
-
-                                            if (objTest != null) {
-                                                viewModel.Test(objTest)
-                                                Toast
-                                                    .makeText(
-                                                        context,
-                                                        "${GHErr}",
-                                                        Toast.LENGTH_SHORT
+                                .clickable (
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    onClick = {
+                                        if (isDN) {
+                                            if (DN?._id != null) {
+                                                val objTest = objNT.value?.let {
+                                                    Server.Test(
+                                                        nguoi_dung_id = DN?._id!!,
+                                                        noi_that_id = it._id,
+                                                        so_luong = soLuong,
+                                                        gia = it.gia
                                                     )
-                                                    .show()
-                                                navController.navigate("gioHang")
+                                                }
+
+                                                if (objTest != null) {
+                                                    viewModel.Test(objTest)
+                                                    Toast
+                                                        .makeText(
+                                                            context,
+                                                            "${GHErr}",
+                                                            Toast.LENGTH_SHORT
+                                                        )
+                                                        .show()
+                                                    navController.navigate("gioHang")
+                                                }
                                             }
+                                        } else {
+                                            isDialog = !isDialog
                                         }
-                                    } else {
-                                        isDialog = !isDialog
                                     }
-                                }
+                                    )
                                 .align(Alignment.Center)
                                 .border(
                                     width = 1.dp,

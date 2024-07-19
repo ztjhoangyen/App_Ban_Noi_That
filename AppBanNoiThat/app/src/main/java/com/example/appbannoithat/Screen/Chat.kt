@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +49,7 @@ import androidx.navigation.NavHostController
 import com.example.appbannoithat.Model.MessageR
 import com.example.appbannoithat.R
 import com.example.appbannoithat.ViewModel.ViewModel
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,9 +67,7 @@ fun Chat(
     val acc = viewModel.acc.observeAsState()
     val id = acc.value?._id
     val nameHT = acc.value?.ten_tai_khoan
-//    viewModel.listenForMessages()
 
-//đặt if else cái nào nên load lại dữ liệu
     if(idNhan == idNhan){
         LaunchedEffect(Unit) {
             viewModel.on("message") { msg: JSONObject ->
@@ -75,12 +75,9 @@ fun Chat(
                     if (idNhan != null) {
                         viewModel.requestMessages(id, idNhan)
                     }
-                    Log.d("Gửi ", "Gửi lần 1")
 
                     viewModel.listenForMessages()
                 }
-                Log.e("listenForMessages", "ok")
-
             }
         }
     }
@@ -93,7 +90,7 @@ fun Chat(
                 modifier = Modifier.background(Color.White),
                 title = {
                     Text(
-                        text = "Tên tài khoản"
+                        text = "${acc.value?.ho_ten}"
                     )
                 },
                 navigationIcon = {
@@ -197,19 +194,32 @@ fun ChatColumn(
     viewModel: ViewModel,
     innerPadding: PaddingValues,
 ) {
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
     val messagesDD = viewModel.messages.observeAsState()
     val danhsach = messagesDD.value ?: emptyList()
+//mới thêm để tự động cuộn
+    // Thêm kiểm tra để đảm bảo danh sách không trống
+    LaunchedEffect(danhsach) {
+        coroutineScope.launch {
+            if (danhsach.isNotEmpty()) {
+                listState.animateScrollToItem(danhsach.size - 1)
+            }
+        }
+    }
 
     LazyColumn(
+        state = listState,
+        verticalArrangement = Arrangement.Bottom,
         modifier = Modifier.padding(innerPadding)
     ) {
-//        để gọi được ra size thì cần xét đk nó không null
         items(danhsach.size) { message ->
             ChatItem(navController, danhsach[message], viewModel)
         }
     }
 }
-//chuyển trang thì gửi lần 2 mới được
+
 @Composable
 fun ChatItem(navController: NavHostController, message: MessageR, viewModel: ViewModel) {
     val acc = viewModel.acc.observeAsState()
@@ -217,21 +227,18 @@ fun ChatItem(navController: NavHostController, message: MessageR, viewModel: Vie
 
     val isSentByAcc = message.senderId == id
 
-//    Column(
-//        modifier = Modifier.padding(8.dp),
-//        verticalArrangement = Arrangement.spacedBy(8.dp)
-//    ) {
-//        Text(
-//            text = "${it.content}",
-//            fontWeight = FontWeight.Bold
-//        )
-//    }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = if (isSentByAcc) Arrangement.End else Arrangement.Start
     ) {
         Box(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(8.dp)
+                .background(
+                    color = if (isSentByAcc) Color(0xFFD0E8FF) else Color(0xFFE0E0E0),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(12.dp),
             contentAlignment = if (isSentByAcc) Alignment.CenterEnd else Alignment.CenterStart
         ) {
             Text(

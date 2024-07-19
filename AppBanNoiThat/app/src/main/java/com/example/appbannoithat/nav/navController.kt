@@ -6,11 +6,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appbannoithat.MainActivity
 import com.example.appbannoithat.Screen.Chat
+import com.example.appbannoithat.Screen.DanhGia
 import com.example.appbannoithat.Screen.DonHang
 import com.example.appbannoithat.Screen.GioHang
 import com.example.appbannoithat.Screen.HoaDon
 import com.example.appbannoithat.Screen.ListNoiThat
 import com.example.appbannoithat.Screen.Login
+import com.example.appbannoithat.Screen.ManHinh
+import com.example.appbannoithat.Screen.NguoiDungs
 import com.example.appbannoithat.Screen.NoiThat
 import com.example.appbannoithat.Screen.Register
 import com.example.appbannoithat.Screen.ThongTinDonHang
@@ -24,7 +27,7 @@ fun navController(viewModel: ViewModel, navController: NavHostController, mainAc
 
     NavHost(
         navController = navController,
-        startDestination = Screen.TrangChu.route
+        startDestination = Screen.ManHinh.route
     ) {
         composable(Screen.TrangChu.route) { TrangChu(navController, viewModel) }
         composable("listNoiThat/{id}") { backStackEntry ->
@@ -40,11 +43,14 @@ fun navController(viewModel: ViewModel, navController: NavHostController, mainAc
                 Chat(navController, viewModel, taikhN, idNhan)
             }
         }
+        composable(Screen.NguoiDungs.route) { NguoiDungs(navController, viewModel) }
+        composable(Screen.ManHinh.route) { ManHinh(navController, viewModel) }
+        composable(Screen.DanhGia.route) { DanhGia(navController, viewModel) }
         composable(Screen.NoiThat.route) { NoiThat(navController, viewModel) }
         composable(Screen.TimKiem.route) { TimKiem(navController, viewModel) }
         composable(Screen.Register.route) { Register(navController, viewModel) }
         composable(Screen.Login.route) { Login(navController, viewModel) }
-        composable(Screen.GioHang.route) { GioHang(navController, viewModel) }
+        composable(Screen.GioHang.route) { GioHang(viewModel, navController) }
         composable(Screen.DonHang.route) { DonHang(navController, viewModel) }
         composable(Screen.HoaDon.route) { HoaDon(navController, viewModel) }
         composable(Screen.ThongTinDonHang.route) { ThongTinDonHang(navController, viewModel) }

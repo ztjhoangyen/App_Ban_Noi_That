@@ -46,6 +46,21 @@ route.get("/hoadon", async function (req, res, next) {
     }
 })
 
+route.get("/itemhoadon/:id", async function (req, res, next) {
+    try {
+        const itemhoadon = await hoaDons.findById(req.params.id).populate('don_hang_id')
+
+        if (!itemhoadon) {
+            return res.status(404).json({ error: "Not found" })
+        }
+
+        res.status(200).json(itemhoadon)
+    } catch (err) {
+        console.error("Error:", err)
+        res.status(500).json({ error: "Lỗi máy chủ nội bộ." })
+    }
+})
+
 route.get("/hoadonchitiet/:id", async function (req, res, next) {
     try {
         const allhoadonct = await hoaDonChiTiets.find({hoa_don_id: req.params.id}).populate('don_hang_ct_id')

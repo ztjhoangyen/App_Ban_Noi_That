@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appbannoithat.Model.Account
+import com.example.appbannoithat.Model.DanhGia
+import com.example.appbannoithat.Model.DanhGiaReq
 import com.example.appbannoithat.Model.DanhMuc
 import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangCT
@@ -24,6 +26,8 @@ import com.example.appbannoithat.Model.MessageR
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
 import com.example.appbannoithat.Model.NoiThat
+import com.example.appbannoithat.Model.PhanHoi
+import com.example.appbannoithat.Model.PhanHoiReq
 import com.example.appbannoithat.Model.Slideshow
 import com.example.appbannoithat.Model.TotalFav
 import com.example.appbannoithat.Model.YeuThich
@@ -111,6 +115,16 @@ class ViewModel : ViewModel() {
 
     private val _hdct = MutableLiveData<List<HoaDonChiTietRes>>()
     val hdct: LiveData<List<HoaDonChiTietRes>> = _hdct
+
+    private val _dgia = MutableLiveData<List<DanhGia>>()
+    val dgia: LiveData<List<DanhGia>> = _dgia
+
+    private val _pHoi = MutableLiveData<List<PhanHoi>>()
+    val pHoi: LiveData<List<PhanHoi>> = _pHoi
+
+    private val _itemhd = MutableLiveData<HoaDonRes>()
+    val itemhd: LiveData<HoaDonRes> = _itemhd
+
 
     //thong bao
     private val _loaiNTErr = MutableLiveData<String>()
@@ -758,6 +772,103 @@ class ViewModel : ViewModel() {
             }
         }
     }
+
+    fun postdanhgia(danhGiaReq : DanhGiaReq) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.postdanhgia(danhGiaReq)
+                if (response.isSuccessful) {
+                    Log.d("postdgia", "Success")
+                } else {
+                    Log.d(
+                        "postdgia",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("postdgia", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getdanhgia() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getdanhgia()
+                if (response.isSuccessful) {
+                    _dgia.value = response.body()
+                    Log.d("getdanhgia", "Success")
+                } else {
+                    Log.d(
+                        "getdanhgia",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                    _dgia.value = emptyList()
+                }
+            } catch (e: Exception) {
+                Log.e("getdanhgia", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun postphanhoi(postphanhoi: PhanHoiReq) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.postphanhoi(postphanhoi)
+                if (response.isSuccessful) {
+                    Log.d("postphanhoi", "Success")
+                } else {
+                    Log.d(
+                        "postphanhoi",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("postphanhoi", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getphanhoi() {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getphanhoi()
+                if (response.isSuccessful) {
+                    _pHoi.value = response.body()
+                    Log.d("getphanhoi", "Success")
+                } else {
+                    _pHoi.value = emptyList()
+                    Log.d(
+                        "getphanhoi",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("getphanhoi", "Not Success ${e.message}")
+            }
+        }
+    }
+
+    fun getitemhoadon(id: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitBanNoiThat().server.getitemhoadon(id)
+                if (response.isSuccessful) {
+                    _itemhd.value = response.body()
+                    Log.d("getitemhoadon", "Success")
+                } else {
+                    Log.d(
+                        "getitemhoadon",
+                        "Not Success: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("getitemhoadon", "Not Success ${e.message}")
+            }
+        }
+    }
+
+
 
     //-----------------gạch
 

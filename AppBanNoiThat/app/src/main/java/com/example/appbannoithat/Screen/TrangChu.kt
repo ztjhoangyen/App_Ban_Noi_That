@@ -54,7 +54,9 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel, ) {
     val acc = viewModel.acc.observeAsState()
     val id = acc.value?._id
 
-    val idngdung = ""
+    val tenTkByAdminNhan = "hoanganhthien"
+    val idTkByAdminNhan = "66812ad058f41685a1eae751"
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -99,8 +101,18 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel, ) {
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() },
                                 onClick = {
-
-                                    navController.navigate("chat/${idngdung}")
+//                                    nếu là người dùng thì nhảy vào đoạn chat với admin
+//                                    nếu là admin thì nhảy sang trang có danh sách tài khoản người dùng rồi mới ấn vào người dùng nhảy sang trang chat
+                                    if(acc.value?.role == true){
+                                        navController.navigate("nguoiDungs")
+                                    }else{
+                                        if (id != null) {
+//                                            admin nhận
+                                            viewModel.requestMessages(id, "66812ad058f41685a1eae751")
+                                        }
+                                        viewModel.listenForMessages()
+                                        navController.navigate("chat/${tenTkByAdminNhan}/${idTkByAdminNhan}")
+                                    }
                                 }
                             )
                             .padding(start = 15.dp)
@@ -206,7 +218,7 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel, ) {
         when(istab){
             "Home" -> Home(it, viewModel, navController)
             "Thư mục" -> ThuMuc(it, viewModel, navController)
-            "Giỏ hàng" -> UITrangChu(it, viewModel, navController)
+            "Giỏ hàng" -> GioHang(viewModel, navController)
             "Tôi" -> DonHang(navController, viewModel)
         }
     }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -104,10 +103,7 @@ fun DonHang(navController: NavController, viewModel: ViewModel) {
                 tabHD(istab) { selectedTab ->
                     istab = selectedTab
                 }
-                LazyColumn(
-                    modifier = Modifier
-                        .height(350.dp)
-                ) {
+                LazyColumn {
                     items(hoadons.filter { it.trang_thai == istab }) { donHang ->
                         DonHangItemView(
                             viewModel,

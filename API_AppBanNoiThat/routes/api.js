@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express')
+var router = express.Router()
 
 const nguoiDungCtrl = require('../controller/nguoiDungCtrl')
 const loaiNoiThatCtrl = require('../controller/loaiNoiThatCtrl')
@@ -13,6 +13,8 @@ const slideShowCtrl = require('../controller/slideShowCtrl')
 const yeuThichCtrl = require('../controller/yeuThichCtrl')
 const chatCtrl = require('../controller/chatCtrl')
 const HoaDonCtrl = require('../controller/HoaDonCtrl')
+const danhGiaCtrl = require('../controller/danhGiaCtrl')
+const phanHoiCtrl = require('../controller/phanHoiCtrl')
 
 
 router.use(nguoiDungCtrl)
@@ -27,6 +29,8 @@ router.use(slideShowCtrl)
 router.use(yeuThichCtrl)
 router.use(chatCtrl)
 router.use(HoaDonCtrl)
+router.use(danhGiaCtrl)
+router.use(phanHoiCtrl)
 
 
-module.exports = router;
+module.exports = router

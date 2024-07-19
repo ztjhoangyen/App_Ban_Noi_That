@@ -3,6 +3,8 @@ package com.example.appbannoithat.Server
 import com.example.appbannoithat.Model.Account
 import com.example.appbannoithat.Model.ChatReq
 import com.example.appbannoithat.Model.ChatRes
+import com.example.appbannoithat.Model.DanhGia
+import com.example.appbannoithat.Model.DanhGiaReq
 import com.example.appbannoithat.Model.DanhMuc
 import com.example.appbannoithat.Model.DonHang
 import com.example.appbannoithat.Model.DonHangCT
@@ -14,9 +16,12 @@ import com.example.appbannoithat.Model.HoaDonChiTietRes
 import com.example.appbannoithat.Model.HoaDonRes
 import com.example.appbannoithat.Model.LoaiNoiThat
 import com.example.appbannoithat.Model.Message
+import com.example.appbannoithat.Model.MessageR
 import com.example.appbannoithat.Model.NguoiDungDK
 import com.example.appbannoithat.Model.NguoiDungDN
 import com.example.appbannoithat.Model.NoiThat
+import com.example.appbannoithat.Model.PhanHoi
+import com.example.appbannoithat.Model.PhanHoiReq
 import com.example.appbannoithat.Model.Slideshow
 import com.example.appbannoithat.Model.TotalFav
 import com.example.appbannoithat.Model.YeuThich
@@ -139,6 +144,23 @@ interface Server {
 
     @GET("hoadonchitiet/{id}")
     suspend fun gethoadonchitiet(@Path("id") id: String): Response<List<HoaDonChiTietRes>>
+
+    @POST("danhgia")
+    suspend fun postdanhgia(@Body danhGiaReq : DanhGiaReq): Response<Void>
+
+    @GET("danhGias")
+    suspend fun getdanhgia(): Response<List<DanhGia>>
+
+    @POST("phanhoi")
+    suspend fun postphanhoi(@Body phanHoiReq: PhanHoiReq): Response<Void>
+//id đánh giá
+    @GET("phanHois")
+    suspend fun getphanhoi(): Response<List<PhanHoi>>
+
+    @GET("itemhoadon/{id}")
+    suspend fun getitemhoadon(@Path("id") id: String): Response<HoaDonRes>
+
+
 
 
 }
