@@ -189,6 +189,7 @@ class ViewModel : ViewModel() {
     }
 
     fun logout() {
+        _acc.value = null
         _isLoggedIn.value = false
         println("${_isLoggedIn.value}")
     }
@@ -497,7 +498,7 @@ class ViewModel : ViewModel() {
                 val response = RetrofitBanNoiThat().server.getDH(id, role)
                 if (response.isSuccessful) {
                     _getDH.value = response.body()
-                    Log.d("VM_getDH", "Success")
+                    Log.d("VM_getDH", "Success ${_getDH.value}")
                 } else {
                     when (response.code()) {
                         404 -> _GHErr.value = "Không tồn tại hóa đơn"

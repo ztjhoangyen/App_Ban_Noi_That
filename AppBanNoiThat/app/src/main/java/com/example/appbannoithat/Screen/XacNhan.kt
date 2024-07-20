@@ -83,13 +83,19 @@ fun XacNhan(navController: NavHostController, viewModel: ViewModel, tongtien: In
             )
         }
     ) {
-        thanhToan(it, tongtien, mainActivity, viewModel)
+        thanhToan(it, tongtien, mainActivity, viewModel, navController)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, viewModel: ViewModel){
+fun thanhToan(
+    it: PaddingValues,
+    tongtien: Int?,
+    mainActivity: MainActivity,
+    viewModel: ViewModel,
+    navController: NavHostController
+){
     var diachi by remember { mutableStateOf("") }
     var diachiErr by remember { mutableStateOf("") }
 
@@ -155,49 +161,49 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        OutlinedTextField(
-            value = sdt,
-            onValueChange = {
-                sdt = it
-                sdtErr = ""
-            },
-            placeholder = {
-                Text(
-                    "Nhập số điện thoại của bạn",
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.DarkGray.copy(alpha = 0.4f)
-                    )
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = Color.LightGray,
-                focusedBorderColor = Color.LightGray,
-                cursorColor = Color.Black
-            ),
-            isError = sdt.isNotEmpty()
-        )
-
-        if (sdtErr.isNotEmpty()) {
-            TextAcc(sdtErr)
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-
-        if (sdtErr != null) {
-            Text(
-                text = sdtErr ?: "",
-                fontSize = 13.sp,
-                color = Color.Red.copy(alpha = 0.7f),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(start = 10.dp),
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
+//        OutlinedTextField(
+//            value = sdt,
+//            onValueChange = {
+//                sdt = it
+//                sdtErr = ""
+//            },
+//            placeholder = {
+//                Text(
+//                    "Nhập số điện thoại của bạn",
+//                    fontWeight = FontWeight.Bold,
+//                    style = MaterialTheme.typography.bodyLarge.copy(
+//                        color = Color.DarkGray.copy(alpha = 0.4f)
+//                    )
+//                )
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(10.dp),
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                unfocusedBorderColor = Color.LightGray,
+//                focusedBorderColor = Color.LightGray,
+//                cursorColor = Color.Black
+//            ),
+//            isError = sdt.isNotEmpty()
+//        )
+//
+//        if (sdtErr.isNotEmpty()) {
+//            TextAcc(sdtErr)
+//        }
+//        Spacer(modifier = Modifier.height(10.dp))
+//
+//        if (sdtErr != null) {
+//            Text(
+//                text = sdtErr ?: "",
+//                fontSize = 13.sp,
+//                color = Color.Red.copy(alpha = 0.7f),
+//                fontWeight = FontWeight.Bold,
+//                modifier = Modifier
+//                    .padding(start = 10.dp),
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(10.dp))
 
 
         OutlinedTextField(
@@ -225,22 +231,6 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
             ),
             isError = ghichu.isNotEmpty()
         )
-
-        if (ghichuErr.isNotEmpty()) {
-            TextAcc(ghichuErr)
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-
-        if (ghichuErr != null) {
-            Text(
-                text = ghichuErr ?: "",
-                fontSize = 13.sp,
-                color = Color.Red.copy(alpha = 0.7f),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(start = 10.dp),
-            )
-        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -321,6 +311,7 @@ fun thanhToan(it: PaddingValues, tongtien: Int?, mainActivity: MainActivity, vie
                                 )
                                 if (idUser != null) {
                                     viewModel.postDH(idUser._id, dh, idUser.role)
+                                    navController.navigate("donHang")
                                 }
                             }
                         }

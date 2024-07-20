@@ -96,7 +96,7 @@ fun Register(navController: NavHostController, viewModel: ViewModel) {
         }
     ) {
         Box(modifier = Modifier.padding(it)) {
-            RegisterForm(scope, snackbarHostState, navController, viewModel)
+            RegisterForm(navController, viewModel)
         }
     }
 }
@@ -104,8 +104,6 @@ fun Register(navController: NavHostController, viewModel: ViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterForm(
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
     navController: NavController,
     viewModel: ViewModel,
 ) {

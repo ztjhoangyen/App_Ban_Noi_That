@@ -158,7 +158,7 @@ route.put('/donhang/:id/trangthai', async function (req, res, next) {
 
 route.get('/donhang/:userId', async function (req, res, next) {
     try {
-        const role = req.query.role
+        const role = req.query.role === 'true'
 
         if(role){
             const listHDtoAd = await donHang.find()

@@ -118,36 +118,6 @@ fun TrangChu (navController: NavHostController, viewModel: ViewModel, ) {
                             .padding(start = 15.dp)
                             .size(20.dp)
                     )
-//                    IconButton(onClick = {}) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Notifications,
-//                            contentDescription = null,
-//                            modifier = Modifier
-//                                .clickable(
-//                                    indication = null,
-//                                    interactionSource = remember { MutableInteractionSource() },
-//                                    onClick = {
-//
-//                                    }
-//                                )
-//                                .size(16.dp),
-//                            tint = Color.Black
-//                        )}
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Filled.Notifications,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    onClick = {
-
-                                    }
-                                )
-                                .size(16.dp),
-                            tint = Color.Black
-                        )}
                 },
                 scrollBehavior = scrollBehavior
             )

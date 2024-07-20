@@ -5,7 +5,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitBanNoiThat {
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.1.206:3000/api/")
+//        .baseUrl("http://192.168.1.206:3000/api/")
+        .baseUrl("http://192.168.2.194:3000/api/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     val server: Server by lazy {
